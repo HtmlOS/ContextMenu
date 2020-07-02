@@ -1,0 +1,26 @@
+{
+  "include": ["*.js", "*.ts", "**/*.js", "**/*.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts", "dist"],
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es2015",
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "outDir": "dist/lib",
+    "strict": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strictPropertyInitialization": false,
+    "allowUnreachableCode": true,
+    "noImplicitThis": false,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": false,
+    "sourceMap": true,
+    "pretty": true,
+    "downlevelIteration": true
+  }
+}

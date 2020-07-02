@@ -1,0 +1,4 @@
+
+*.js		eol=lf
+*.ts		eol=lf
+*.css		eol=lf

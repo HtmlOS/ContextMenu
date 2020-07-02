@@ -1,0 +1,122 @@
+{
+  "title": "contextmenu",
+  "name": "@htmlos/contextmenu",
+  "description": "contextmenu for html5",
+  "typings": "dist/types/contextmenu.d.ts",
+  "main": "dist/contextmenu.js",
+  "module": "dist/contextmenu.esm.js",
+  "browser": "dist/contextmenu.js",
+  "style": "dist/contextmenu.css",
+  "version": "0.1.1",
+  "scripts": {
+    "prettier": "prettier --write **/*.{js,ts,css}",
+    "lint-code": "eslint --fix **/*.{js,ts}",
+    "lint-style": "stylelint --fix **/*.css",
+    "serve": "rollup -c -w",
+    "build": "tsc && cross-env NODE_ENV=production rollup -c",
+    "package:publish": "yarn build && npm publish --access=public",
+    "package:unpublish": "npm unpublish contextmenu.ts --force"
+  },
+  "keywords": [
+    "menu",
+    "contextmenu",
+    "os",
+    "web",
+    "html",
+    "html5",
+    "web",
+    "js",
+    "javascript",
+    "ts",
+    "typescript",
+    "vue",
+    "react",
+    "browser"
+  ],
+  "license": "LGPL-3.0",
+  "author": {
+    "name": "Mr.Fan",
+    "email": "zlhc@live.com"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/HtmlOS/contextmenu",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:HtmlOS/contextmenu.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HtmlOS/contextmenu/issues"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "@babel/preset-flow": "^7.10.1",
+    "@types/node": "^14.0.14",
+    "@typescript-eslint/eslint-plugin": "^3.5.0",
+    "@typescript-eslint/parser": "^3.5.0",
+    "babel-core": "^6.26.3",
+    "babel-plugin-add-module-exports": "^1.0.2",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.7.0",
+    "cross-env": "^7.0.2",
+    "cssnano": "^4.1.10",
+    "eslint": "^7.3.1",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "livereload": "^0.9.1",
+    "postcss-nested": "^4.2.1",
+    "postcss-preset-env": "^6.7.0",
+    "postcss-simple-vars": "^5.0.2",
+    "prettier": "^2.0.5",
+    "rollup": "^2.18.1",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-filesize": "^9.0.1",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-livereload": "^1.3.0",
+    "rollup-plugin-local-resolve": "^1.0.7",
+    "rollup-plugin-multi-entry": "^2.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-peer-deps-external": "^2.2.2",
+    "rollup-plugin-postcss": "^3.1.2",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-serve": "^1.0.1",
+    "rollup-plugin-sourcemaps": "^0.6.2",
+    "rollup-plugin-terser": "^6.1.0",
+    "rollup-plugin-typescript2": "^0.27.1",
+    "rollup-plugin-uglify": "^6.0.4",
+    "rollup-watch": "^4.3.1",
+    "style-loader": "^1.2.1",
+    "stylelint": "^13.6.1",
+    "stylelint-config-recommended": "^3.0.0",
+    "stylelint-config-standard": "^20.0.0",
+    "stylelint-order": "^4.1.0",
+    "ts-loader": "^7.0.5",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.6"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "lint-staged": {
+    "*": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.{js,ts}": [
+      "eslint --fix"
+    ],
+    "*.{css}": [
+      "stylelint --fix"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "lint-staged"
+    }
+  }
+}
