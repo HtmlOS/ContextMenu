@@ -1,11 +1,12 @@
 'use strict';
 
 import ContextMenuPresenter from '../presenter/ContextMenuPresenter';
+import Utils from '../utils/Utils';
+import ContextMenuItem from './ContextMenuItem';
+import Logger from '../utils/Logger';
 
 class ContextMenuOptions {
-    i18n: (key: string) => string = (key: string) => {
-        return key;
-    };
+    i18n?: (key: string) => string;
 }
 
 class ContextMenu {
@@ -13,29 +14,38 @@ class ContextMenu {
     static presenter?: ContextMenuPresenter;
 
     static init(globalOptions?: ContextMenuOptions): void {
-        ContextMenu.options = globalOptions;
+        this.options = globalOptions;
+    }
+    static setDebugMode(b: boolean): void {
+        Logger.debuggable = b;
     }
 
     static hide(): void {
+        Logger.debug('hide menu');
+
         const e = window.event;
         if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.cancelBubble = true;
-            e.returnValue = false;
+            Utils.preventEvent(e);
+        }
+        if (this.presenter != undefined) {
+            this.presenter.hideMenu();
+            this.presenter = undefined;
         }
     }
 
-    static show(menu: ContextMenu, options?: ContextMenuOptions): void {
+    static show(menu: Array<ContextMenuItem>, options?: ContextMenuOptions): void {
         const e = window.event;
-        if (!e) {
+        if (!e || !(e instanceof MouseEvent)) {
             return;
+        } else {
+            Utils.preventEvent(e);
         }
-        e.preventDefault();
-        e.stopPropagation();
-        e.cancelBubble = true;
-        e.returnValue = false;
-        ContextMenu.hide();
+
+        this.hide();
+
+        this.presenter = new ContextMenuPresenter(Utils.getCurrentEventLocation(e), menu, options || this.options);
+        this.presenter.showMenu();
+        Logger.debug('show menu', menu);
     }
 }
 

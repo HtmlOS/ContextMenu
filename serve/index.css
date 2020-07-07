@@ -10,3 +10,8 @@ body {
     -moz-osx-font-smoothing: grayscale;
     color: #2c3e50;
 }
+
+.root {
+    width: 120vw;
+    height: 120vh;
+}

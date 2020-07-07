@@ -5,6 +5,7 @@ import ContextMenuItem from '../model/ContextMenuItem';
 import ContextMenuView from '../view/ContextMenuView';
 import {ContextMenuOptions} from '../model/ContextMenu';
 import Rect from '../utils/Rect';
+import Logger from '../utils/Logger';
 
 class ContextMenuPresenter {
     readonly menuOptions: ContextMenuOptions;
@@ -45,7 +46,7 @@ class ContextMenuPresenter {
         this.hideMenuStack(id);
     }
 
-    public showMenu(id: string): void {
+    public showMenu(id?: string): void {
         if (!id) {
             id = '0';
         }
@@ -66,6 +67,7 @@ class ContextMenuPresenter {
         // Step1, 先移除不需要的菜单
         for (const oldId of oldIds) {
             if (!newIdMap.has(oldId)) {
+                Logger.debug('menu remove by id', oldId);
                 this.hideMenu(oldId);
             }
         }
@@ -76,18 +78,23 @@ class ContextMenuPresenter {
 
     private hideMenuStack(id: string): void {
         this.menuStacks.forEach((value, key) => {
-            if (key.indexOf('' + id) >= 0) {
+            if (key.indexOf(id) >= 0) {
                 value.hide();
                 this.menuStacks.delete(key);
             }
         });
     }
     private showMenuStack(ids: Array<string>): void {
+        Logger.debug('menu show stacks :', ids);
         ids.sort();
         for (const id of ids) {
             // 已经存在的, 不做处理
+
             if (this.menuStacks.has(id)) {
+                Logger.debug('menu keep by id', id);
                 continue;
+            } else {
+                Logger.debug('menu create by id', id);
             }
             // 生成新的
             const menuItems = this.menuTree.get(id);
@@ -116,7 +123,7 @@ class ContextMenuPresenter {
                 if (!parentView) {
                     return;
                 }
-                const anchorRect = parentView.itemViewRect.get(index);
+                const anchorRect = parentView.itemViewRects.get(index);
                 if (!anchorRect) {
                     return;
                 }

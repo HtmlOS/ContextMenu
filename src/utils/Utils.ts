@@ -41,7 +41,7 @@ class Utils {
         return new Point(x, y);
     }
 
-    static getScreenRect(): Rect {
+    static getClientRect(): Rect {
         let winWidth = 0;
         let winHeight = 0;
         // 获取窗口宽度
@@ -63,6 +63,20 @@ class Utils {
         }
 
         return new Rect(0, 0, winWidth, winHeight);
+    }
+
+    public static visitElemementChildren(
+        element: HTMLElement,
+        callback: (index: number, child: HTMLElement) => void
+    ): void {
+        let child = element.firstChild;
+        let index = 0;
+        while (child !== undefined && child !== null) {
+            if (child.nodeType === 1 && child instanceof HTMLElement) {
+                callback(index++, child);
+            }
+            child = child.nextSibling;
+        }
     }
 }
 

@@ -9,4 +9,4 @@ Object.defineProperty(window, 'ContextMenu', {
     configurable: false,
 });
 
-exports.default = ContextMenu;
+export default ContextMenu;
