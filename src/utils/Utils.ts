@@ -31,12 +31,12 @@ class Utils {
         return scrollLeft;
     }
 
-    static getCurrentEventLocation(e: MouseEvent): Point {
-        const scrollX = this.getCurrentScrollLeft();
-        const scrollY = this.getCurrentScrollTop();
+    static getMouseEventPoint(e: MouseEvent): Point {
+        const scrollX = Utils.getCurrentScrollLeft();
+        const scrollY = Utils.getCurrentScrollTop();
 
-        const x = e.pageX || e.clientX + scrollX;
-        const y = e.pageY || e.clientY + scrollY;
+        const x = e.pageX - scrollX || e.clientX;
+        const y = e.pageY - scrollY || e.clientY;
 
         return new Point(x, y);
     }

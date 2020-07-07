@@ -32,8 +32,6 @@ class ContextMenuView {
     readonly rootView: HTMLElement;
     readonly rootViewRect: Rect = new Rect(0, 0, 0, 0);
     readonly itemViewRects: Map<number, Rect> = new Map();
-    readonly itemViewHeight: number;
-    readonly deviderViewHeight: number;
 
     onStateChangedListening: OnStateChangedListening;
 
@@ -42,8 +40,6 @@ class ContextMenuView {
         this.items = items;
         this.options = options;
         this.rootView = this.generateMenuView();
-
-        this.deviderViewHeight = this.getItemHeight('divider');
     }
     get onStateChangedListener(): OnStateChangedListening {
         return this.onStateChangedListening;
@@ -73,7 +69,7 @@ class ContextMenuView {
 
         view.style.visibility = 'hidden';
 
-        Logger.debug('menu view render start');
+        Logger.debug('menu view render start : anchor rect =', anchor);
         const timeRenderStart = new Date().getTime();
         if (this.onStateChangedListener !== undefined) {
             this.onStateChangedListener.onRenderStart();
@@ -125,7 +121,7 @@ class ContextMenuView {
     private updateStateChangedListener(): void {
         this.visitItems((index, itemView) => {
             const item = this.items[index];
-            if (item.diabled !== true && this.onStateChangedListener !== undefined) {
+            if (item.disabled !== true && this.onStateChangedListener !== undefined) {
                 itemView.onmouseover = ((index: number, hook: (index: number) => void) => {
                     return (): void => {
                         Logger.debug('mouse over  : ', this.id, index);
@@ -152,17 +148,14 @@ class ContextMenuView {
         });
     }
 
-    private generateItemView(index: number, item: ContextMenuItem): HTMLElement {
+    private generateItemView(item: ContextMenuItem): HTMLElement {
         const itemView: HTMLElement = document.createElement('div');
 
-        itemView.className = item.diabled !== true ? CONTEXTMENU_STYLE_ITEM_NORMAL : CONTEXTMENU_STYLE_ITEM_DISABLED;
-
-        const itemHotkeyPlaceHolderChars: string = this.getItemHotkeyPlaceHolderChars();
+        itemView.className = item.disabled !== true ? CONTEXTMENU_STYLE_ITEM_NORMAL : CONTEXTMENU_STYLE_ITEM_DISABLED;
 
         const hasChildren: boolean = item.children !== undefined && item.children.length > 0;
         const showArrow: boolean = hasChildren;
         const showHotkey: boolean = !hasChildren && item.hotkey !== undefined && item.hotkey.length > 0;
-        const showHotKeyPlaceHolder: boolean = itemHotkeyPlaceHolderChars.length > 0;
 
         const itemIcon: string =
             item.icon || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
@@ -180,17 +173,9 @@ class ContextMenuView {
             <img class="${CONTEXTMENU_STYLE_ITEM_ICON}" src="${itemIcon}" draggable="false" />
         
             <div class="${CONTEXTMENU_STYLE_ITEM_TEXT}">${itemName}</div>
-        
-            <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}"
-                style="display:${showHotkey ? 'block' : 'none'}">
+            
+            <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}" style="display:${showHotkey ? 'block' : 'none'}">
                 ${itemHotkey}
-            </div>
-
-            <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}"
-                style="display:${showHotKeyPlaceHolder ? 'block' : 'none'};
-                        visibility: ${showHotKeyPlaceHolder ? 'visible' : 'hidden'};
-                        opacity: 0; filter:alpha(opacity=0);">
-                ${itemHotkeyPlaceHolderChars}
             </div>
             
             <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
@@ -210,7 +195,7 @@ class ContextMenuView {
 
         menuView.className = CONTEXTMENU_STYLE;
 
-        menuView.style.position = 'fixed';
+        menuView.style.position = 'fixed'; // 生成绝对定位的元素，相对于浏览器窗口进行定位。
         menuView.style.width = 'auto';
         menuView.style.height = 'auto';
         menuView.style.zIndex = '9999999999';
@@ -220,7 +205,7 @@ class ContextMenuView {
 
         for (const i in this.items) {
             const item: ContextMenuItem = this.items[i];
-            const itemView = this.generateItemView(parseInt(i), item);
+            const itemView = this.generateItemView(item);
             menuView.appendChild(itemView);
         }
 
@@ -234,14 +219,20 @@ class ContextMenuView {
 
         this.visitItems((index, element) => {
             const elementRect = element.getBoundingClientRect();
-            this.itemViewRects.set(index, new Rect(mL, elementRect.top, mW, elementRect.height));
+
+            const l = mL;
+            const t = elementRect.top;
+            const w = mW;
+            const h = elementRect.height;
+
+            this.itemViewRects.set(index, new Rect(l, t, w, h));
         });
     }
     private visitItems(callback: (index: number, child: HTMLElement) => void): void {
         let index = 0;
-        Utils.visitElemementChildren(this.rootView, (_, element) => {
-            if (element.childNodes.length === 1) {
-                // is divider
+        Utils.visitElemementChildren(this.rootView, (i, element) => {
+            const item = this.items[i];
+            if (this.isDivider(item)) {
                 return;
             }
             callback(index++, element);
@@ -250,7 +241,7 @@ class ContextMenuView {
 
     private fixedLocation(anchor: Rect): Rect {
         const clientRect: Rect = Utils.getClientRect();
-        Logger.debug('menu view fix location start: screen rect = ', clientRect, 'anchor rect = ', anchor);
+        Logger.debug('menu view fix location start: screen rect = ', clientRect);
 
         const mW: number = this.rootViewRect.w;
         const mH: number = this.rootViewRect.h;
@@ -333,44 +324,8 @@ class ContextMenuView {
         return rect;
     }
 
-    private getItemHeight(type: 'divider' | 'item'): number {
-        let menuMock = new ContextMenuItem();
-        switch (type) {
-            case 'divider':
-                menuMock.name = '';
-                break;
-            case 'item':
-                menuMock.name = 'mock';
-                break;
-            default:
-                return 0;
-        }
-        const div = this.generateItemView(0, menuMock);
-        div.style.visibility = 'hidden';
-        document.body.appendChild(div);
-        // https://developer.mozilla.org/zh-CN/docs/Web/API/Window/getComputedStyle
-        const style = window.getComputedStyle(div);
-        const h = parseInt(style.height) || 0;
-        const p = (parseInt(style.paddingTop) || 0) + (parseInt(style.paddingBottom) || 0);
-        const m = (parseInt(style.marginTop) || 0) + (parseInt(style.marginBottom) || 0);
-        document.body.removeChild(div);
-        const height = h + p + m;
-        Logger.debug(`compute ${type} height : ${height}= ${h} + ${p} + ${m}`, div);
-        return height;
-    }
-
     private isDivider(item: ContextMenuItem): boolean {
         return !item.name || item.name.trim().length === 0;
-    }
-
-    private getItemHotkeyPlaceHolderChars(): string {
-        let chars = '';
-        for (const item of this.items) {
-            if (item && item.hotkey && item.hotkey.length > chars.length) {
-                chars = item.hotkey;
-            }
-        }
-        return chars;
     }
 }
 

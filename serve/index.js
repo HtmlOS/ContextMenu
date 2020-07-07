@@ -11,8 +11,24 @@ const menulist = [
         },
         children: [{name: 'copy'}, {name: 'paste'}],
     },
-    {name: 'copy'},
-    {name: 'paste'},
+    {
+        name: 'copy',
+        hotkey: 'ctrl+c',
+    },
+    {
+        name: 'paste',
+        hotkey: 'ctrl+v',
+    },
+    {
+        name: 'delete',
+        hotkey: 'ctrl+d | delete',
+    },
+    {
+        name: '',
+    },
+    {
+        name: '属性',
+    },
 ];
 
 const div = document.getElementsByClassName('root')[0];

@@ -5,7 +5,7 @@ class ContextMenuItem {
     children?: Array<ContextMenuItem>;
     icon?: string;
     hotkey?: string;
-    diabled?: boolean;
+    disabled?: boolean;
     onclick?: (index: number, item: ContextMenuItem) => void;
 }
 

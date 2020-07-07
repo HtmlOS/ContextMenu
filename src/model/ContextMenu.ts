@@ -7,11 +7,23 @@ import Logger from '../utils/Logger';
 
 class ContextMenuOptions {
     i18n?: (key: string) => string;
+    hideOn: { //TODO 
+        windowResize: boolean,
+        windowScroll: boolean,
+        targetScroll: boolean,
+        outerClick: boolean,
+    }
+}
+
+class MenuAutoHideMonitor{
+    static target?: HTMLElement;
+
 }
 
 class ContextMenu {
     static options?: ContextMenuOptions;
     static presenter?: ContextMenuPresenter;
+    static autoHideMonitor?: MenuAutoHideMonitor;
 
     static init(globalOptions?: ContextMenuOptions): void {
         this.options = globalOptions;
@@ -45,7 +57,7 @@ class ContextMenu {
 
         Logger.debug('show menu', menu);
 
-        this.presenter = new ContextMenuPresenter(Utils.getCurrentEventLocation(e), menu, options || this.options);
+        this.presenter = new ContextMenuPresenter(Utils.getMouseEventPoint(e), menu, options || this.options);
         this.presenter.showMenu();
     }
 }
