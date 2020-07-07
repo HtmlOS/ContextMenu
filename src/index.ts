@@ -1,7 +1,7 @@
 'use strict';
 
-import { ContextMenu } from "./model/ContextMenu";
-import "./view/ContextMenu.css"
+import {ContextMenu} from './model/ContextMenu';
+import './view/ContextMenu.css';
 
 Object.defineProperty(window, 'ContextMenu', {
     value: ContextMenu,

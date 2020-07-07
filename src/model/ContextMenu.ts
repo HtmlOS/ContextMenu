@@ -10,7 +10,7 @@ class ContextMenuOptions {
 
 class ContextMenu {
     static options?: ContextMenuOptions;
-    static presenter?: ContextMenuPresenter ;
+    static presenter?: ContextMenuPresenter;
 
     static init(globalOptions?: ContextMenuOptions): void {
         ContextMenu.options = globalOptions;
