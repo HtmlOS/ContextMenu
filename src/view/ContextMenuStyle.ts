@@ -3,8 +3,8 @@
 export const CONTEXTMENU_STYLE = 'contextmenu';
 
 export const CONTEXTMENU_STYLE_ITEM_NORMAL = 'contextmenu_item';
-export const CONTEXTMENU_STYLE_ITEM_SELECTED = 'contextmenu_item selected';
-export const CONTEXTMENU_STYLE_ITEM_DISABLED = 'contextmenu_item disabled';
+export const CONTEXTMENU_STYLE_ITEM_SELECTED = 'contextmenu_item contextmenu_item_selected';
+export const CONTEXTMENU_STYLE_ITEM_DISABLED = 'contextmenu_item contextmenu_item_disabled';
 
 export const CONTEXTMENU_STYLE_ITEM_DIVIDER = 'contextmenu_item_divider';
 export const CONTEXTMENU_STYLE_ITEM_ICON = 'contextmenu_item_icon';

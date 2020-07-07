@@ -43,9 +43,10 @@ class ContextMenu {
 
         this.hide();
 
+        Logger.debug('show menu', menu);
+
         this.presenter = new ContextMenuPresenter(Utils.getCurrentEventLocation(e), menu, options || this.options);
         this.presenter.showMenu();
-        Logger.debug('show menu', menu);
     }
 }
 

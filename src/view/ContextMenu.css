@@ -5,6 +5,8 @@
     stroke: white;
     border: 0 solid #999;
     border-radius: 1px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 
     /* shadow */
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
@@ -82,7 +84,7 @@
     background: rgba(196, 196, 196, 0.5);
 }
 
-.contextmenu_item .disabled {
+.contextmenu_item_disabled {
     -webkit-filter: grayscale(100%);
     -moz-filter: grayscale(100%);
     -ms-filter: grayscale(100%);
@@ -93,8 +95,8 @@
     opacity: 0.6;
 }
 
-.contextmenu_item .selected {
+.contextmenu_item_selected {
     border-radius: 1px;
-    background-color: whitesmoke;
+    background: whitesmoke;
     color: white;
 }

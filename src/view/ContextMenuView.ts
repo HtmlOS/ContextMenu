@@ -19,6 +19,7 @@ import Logger from '../utils/Logger';
 
 interface OnStateChangedListening {
     onSelected(index: number): void;
+    onClicked(index: number, item: ContextMenuItem): void;
     onRenderStart(): void;
     onRenderStop(costTime: number): void;
 }
@@ -34,7 +35,7 @@ class ContextMenuView {
     readonly itemViewHeight: number;
     readonly deviderViewHeight: number;
 
-    onStateChangedListener: OnStateChangedListening;
+    onStateChangedListening: OnStateChangedListening;
 
     constructor(id: string, items: Array<ContextMenuItem>, options: ContextMenuOptions) {
         this.id = id;
@@ -44,16 +45,117 @@ class ContextMenuView {
 
         this.deviderViewHeight = this.getItemHeight('divider');
     }
+    get onStateChangedListener(): OnStateChangedListening {
+        return this.onStateChangedListening;
+    }
 
-    hide(): void {
+    set onStateChangedListener(listener: OnStateChangedListening) {
+        this.onStateChangedListening = listener;
+        this.updateStateChangedListener();
+    }
+
+    public select(index?: number): void {
+        if (index === undefined) {
+            index = -1;
+        }
+        this.visitItems((i, element) => {
+            element.className = i !== index ? CONTEXTMENU_STYLE_ITEM_NORMAL : CONTEXTMENU_STYLE_ITEM_SELECTED;
+        });
+    }
+
+    public hide(): void {
         const view = this.rootView;
         document.body.removeChild(view);
+    }
+
+    public show(anchor: Rect): void {
+        const view = this.rootView;
+
+        view.style.visibility = 'hidden';
+
+        Logger.debug('menu view render start');
+        const timeRenderStart = new Date().getTime();
+        if (this.onStateChangedListener !== undefined) {
+            this.onStateChangedListener.onRenderStart();
+        }
+
+        document.body.appendChild(view);
+
+        const reandering = (): void => {
+            setTimeout(() => {
+                if (!view.offsetWidth || !view.offsetHeight) {
+                    reandering();
+                    Logger.debug('menu view rendering');
+                    return;
+                }
+
+                const width: number = view.offsetWidth;
+                const height: number = view.offsetHeight;
+
+                Logger.debug('menu view sized: ', width + 'x' + height);
+
+                Object.assign(this.rootViewRect, new Rect(0, 0, width, height));
+
+                this.computeItemRects();
+
+                const menuRect: Rect = this.fixedLocation(anchor);
+
+                Object.assign(this.rootViewRect, menuRect);
+                Logger.debug('menu view fixed: ', this.rootViewRect.w + 'x' + this.rootViewRect.h, this.rootViewRect);
+
+                view.style.width = menuRect.w + 'px';
+                view.style.height = menuRect.h + 'px';
+                view.style.top = menuRect.t + 'px';
+                view.style.left = menuRect.l + 'px';
+                view.style.visibility = 'visible';
+
+                this.computeItemRects();
+
+                const timeRenderStop = new Date().getTime();
+                const timeRenderCost = timeRenderStop - timeRenderStart;
+                Logger.debug('menu view end : cost ' + timeRenderCost + 'ms');
+                if (this.onStateChangedListener !== undefined) {
+                    this.onStateChangedListener.onRenderStop(timeRenderCost);
+                }
+            }, 10);
+        };
+        reandering();
+    }
+
+    private updateStateChangedListener(): void {
+        this.visitItems((index, itemView) => {
+            const item = this.items[index];
+            if (item.diabled !== true && this.onStateChangedListener !== undefined) {
+                itemView.onmouseover = ((index: number, hook: (index: number) => void) => {
+                    return (): void => {
+                        Logger.debug('mouse over  : ', this.id, index);
+                        hook(index);
+                    };
+                })(index, this.onStateChangedListener.onSelected);
+                itemView.onmouseleave = ((index: number, hook: (index: number) => void) => {
+                    return (): void => {
+                        Logger.debug('mouse leave : ', this.id, index);
+                        hook(-1);
+                    };
+                })(index, this.onStateChangedListener.onSelected);
+
+                itemView.onclick = ((
+                    index: number,
+                    item: ContextMenuItem,
+                    hook: (index: number, item: ContextMenuItem) => void
+                ) => {
+                    return (): void => {
+                        hook(index, item);
+                    };
+                })(index, item, this.onStateChangedListener.onClicked);
+            }
+        });
     }
 
     private generateItemView(index: number, item: ContextMenuItem): HTMLElement {
         const itemView: HTMLElement = document.createElement('div');
 
-        itemView.className = item.enabled === true ? CONTEXTMENU_STYLE_ITEM_NORMAL : CONTEXTMENU_STYLE_ITEM_DISABLED;
+        itemView.className = item.diabled !== true ? CONTEXTMENU_STYLE_ITEM_NORMAL : CONTEXTMENU_STYLE_ITEM_DISABLED;
 
         const itemHotkeyPlaceHolderChars: string = this.getItemHotkeyPlaceHolderChars();
 
@@ -98,24 +200,6 @@ class ContextMenuView {
         `;
         }
 
-        if (item.enabled === true && this.onStateChangedListener) {
-            itemView.onmouseenter = ((index: number, hook: (index: number) => void) => {
-                return (): void => {
-                    hook(index);
-                };
-            })(index, this.onStateChangedListener.onSelected);
-        }
-        if (item.enabled === true && item.onclick) {
-            itemView.onclick = ((
-                index: number,
-                item: ContextMenuItem,
-                hook: (index: number, item: ContextMenuItem) => void
-            ) => {
-                return (): void => {
-                    hook(index, item);
-                };
-            })(index, item, item.onclick);
-        }
         return itemView;
     }
 
@@ -144,72 +228,23 @@ class ContextMenuView {
         return menuView;
     }
 
-    public show(anchor: Rect): void {
-        const view = this.rootView;
-
-        view.style.visibility = 'hidden';
-
-        Logger.debug('menu view render start');
-        const timeRenderStart = new Date().getTime();
-        if (this.onStateChangedListener) {
-            this.onStateChangedListener.onRenderStart();
-        }
-
-        document.body.appendChild(view);
-
-        const reandering = (): void => {
-            setTimeout(() => {
-                if (!view.offsetWidth || !view.offsetHeight) {
-                    reandering();
-                    Logger.debug('menu view rendering');
-                    return;
-                }
-
-                const width: number = view.offsetWidth;
-                const height: number = view.offsetHeight;
-
-                Logger.debug('menu view sized: ', width + 'x' + height);
-
-                Object.assign(this.rootViewRect, new Rect(0, 0, width, height));
-
-                this.computeItemRects();
-
-                const menuRect: Rect = this.fixedLocation(anchor);
-
-                Object.assign(this.rootViewRect, menuRect);
-                Logger.debug('menu view fixed: ', this.rootViewRect.w + 'x' + this.rootViewRect.h, this.rootViewRect);
-
-                view.style.width = menuRect.w + 'px';
-                view.style.height = menuRect.h + 'px';
-                view.style.top = menuRect.t + 'px';
-                view.style.left = menuRect.l + 'px';
-                view.style.visibility = 'visible';
-
-                this.computeItemRects();
-
-                const timeRenderStop = new Date().getTime();
-                const timeRenderCost = timeRenderStop - timeRenderStart;
-                Logger.debug('menu view end : cost ' + timeRenderCost + 'ms');
-                if (this.onStateChangedListener) {
-                    this.onStateChangedListener.onRenderStop(timeRenderCost);
-                }
-            }, 10);
-        };
-        reandering();
-    }
-
     private computeItemRects(): void {
         const mL = this.rootViewRect.l;
         const mW = this.rootViewRect.w;
+
+        this.visitItems((index, element) => {
+            const elementRect = element.getBoundingClientRect();
+            this.itemViewRects.set(index, new Rect(mL, elementRect.top, mW, elementRect.height));
+        });
+    }
+    private visitItems(callback: (index: number, child: HTMLElement) => void): void {
         let index = 0;
         Utils.visitElemementChildren(this.rootView, (_, element) => {
             if (element.childNodes.length === 1) {
                 // is divider
                 return;
             }
-            const elementRect = element.getBoundingClientRect();
-            this.itemViewRects.set(index++, new Rect(mL, elementRect.top, mW, elementRect.height));
-            Logger.debug('visitElemementChildren', index, element, element.getBoundingClientRect());
+            callback(index++, element);
         });
     }
 

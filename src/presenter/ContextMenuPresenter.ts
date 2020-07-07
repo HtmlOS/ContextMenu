@@ -13,10 +13,15 @@ class ContextMenuPresenter {
     readonly menuTree: Map<string, Array<ContextMenuItem>> = new Map();
     readonly menuStacks: Map<string, ContextMenuView> = new Map();
 
+    postSelectionId: string;
+    postSelectionType: 'i' | 'o';
+    postSelectionTimerId: NodeJS.Timeout;
+
     constructor(position: Point, menuItems: Array<ContextMenuItem>, options?: ContextMenuOptions) {
         this.menuPosition = position;
         this.processMenuTree(this.menuTree, '0', menuItems);
         this.menuOptions = options || new ContextMenuOptions();
+        Logger.debug('generate menu tree : ', this.menuTree);
     }
 
     private processMenuTree(
@@ -52,14 +57,19 @@ class ContextMenuPresenter {
         }
 
         const newIdMap: Map<string, string> = new Map();
-        for (const index in id.split(',')) {
-            const path = Array.from(newIdMap.keys()).concat(index).join(',');
-            newIdMap.set(path, index);
+        const splits = id.split(',');
+
+        while (splits.length > 0) {
+            const path = splits.join(',');
+            newIdMap.set(path, '');
+            splits.pop();
         }
 
         const newIds: Array<string> = Array.from(newIdMap.keys());
         const oldIds: Array<string> = Array.from(this.menuStacks.keys());
 
+        Logger.debug('show menu : id  =', id);
+        Logger.debug('show menu : ids =', newIds);
         /*
          * 如果当前已存在菜单, id 相同的直接使用, 不同的清除
          */
@@ -68,7 +78,7 @@ class ContextMenuPresenter {
         for (const oldId of oldIds) {
             if (!newIdMap.has(oldId)) {
                 Logger.debug('menu remove by id', oldId);
-                this.hideMenu(oldId);
+                this.hideMenuStack(oldId);
             }
         }
 
@@ -84,18 +94,28 @@ class ContextMenuPresenter {
             }
         });
     }
+
     private showMenuStack(ids: Array<string>): void {
         Logger.debug('menu show stacks :', ids);
         ids.sort();
         for (const id of ids) {
             // 已经存在的, 不做处理
 
-            if (this.menuStacks.has(id)) {
-                Logger.debug('menu keep by id', id);
-                continue;
-            } else {
-                Logger.debug('menu create by id', id);
+            const hasParent = id.indexOf(',') >= 0;
+            const parentIndex = parseInt(!hasParent ? id : id.substr(id.lastIndexOf(',') + 1));
+            const parentId = !hasParent ? undefined : id.substr(0, id.lastIndexOf(','));
+            const parentView = parentId === undefined ? undefined : this.menuStacks.get(parentId);
+
+            if (parentView !== undefined) {
+                parentView.select(parentIndex);
             }
+
+            const exist = this.menuStacks.get(id);
+            if (exist !== undefined) {
+                exist.select(-1);
+                continue;
+            }
+
             // 生成新的
             const menuItems = this.menuTree.get(id);
             if (!menuItems) {
@@ -105,25 +125,38 @@ class ContextMenuPresenter {
 
             menuView.onStateChangedListener = {
                 onSelected: (index: number): void => {
-                    const nextMenuId = id + ',' + index;
-                    this.showMenu(nextMenuId);
+                    if (index === -1) {
+                        this.postSelection('o', id);
+                    } else {
+                        this.postSelection('i', id + ',' + index);
+                    }
+                },
+                onClicked: (index: number, item: ContextMenuItem): void => {
+                    if (item.onclick) {
+                        item.onclick(index, item);
+                        this.hideMenu();
+                    }
                 },
                 onRenderStart: (): void => {},
                 onRenderStop: (_): void => {
                     this.showMenuStack(ids);
                 },
             };
+            menuView.rootView.onmouseenter = (): void => {
+                Logger.debug('mouse enter  : ', id);
+                this.postSelection('i', id);
+            };
+            menuView.rootView.onmouseleave = (): void => {
+                Logger.debug('mouse out  : ', id);
+                this.postSelection('o', '0');
+            };
 
-            if (id.indexOf(',') < 0) {
+            if (!hasParent) {
                 menuView.show(new Rect(this.menuPosition.x, this.menuPosition.y, 0, 0));
+            } else if (parentView === undefined) {
+                return;
             } else {
-                const index = parseInt(id.substr(id.lastIndexOf(',') + 1));
-                const parentId: string = id.substr(0, id.lastIndexOf(','));
-                const parentView: ContextMenuView | undefined = this.menuStacks.get(parentId);
-                if (!parentView) {
-                    return;
-                }
-                const anchorRect = parentView.itemViewRects.get(index);
+                const anchorRect = parentView.itemViewRects.get(parentIndex);
                 if (!anchorRect) {
                     return;
                 }
@@ -133,6 +166,21 @@ class ContextMenuPresenter {
 
             return;
         }
+    }
+
+    private postSelection(type: 'i' | 'o', id: string): void {
+        if (this.postSelectionType === type && this.postSelectionId.indexOf(id) >= 0) {
+            // 优化鼠标事件的响应顺序, 父元素进入子元素时, 响应 id 最长的
+            return;
+        }
+        clearTimeout(this.postSelectionTimerId);
+
+        this.postSelectionType = type;
+        this.postSelectionId = id;
+        Logger.debug('menu post stacks : id =', id);
+        this.postSelectionTimerId = setTimeout(() => {
+            this.showMenu(id);
+        }, 10);
     }
 }
 
