@@ -1,5 +1,12 @@
 'use strict';
 
-import ContextMenu from './lib/ContextMenu';
+import { ContextMenu } from "./model/ContextMenu";
+import "./view/ContextMenu.css"
+
+Object.defineProperty(window, 'ContextMenu', {
+    value: ContextMenu,
+    writable: false,
+    configurable: false,
+});
 
 exports.default = ContextMenu;
