@@ -32,7 +32,6 @@ const menulist = [
 ];
 
 const div = document.getElementsByClassName('root')[0];
-console.log('found root div: ', div);
 div.oncontextmenu = function (e) {
     console.log(e);
     ContextMenu.show(menulist);

@@ -4,15 +4,19 @@
 const Logger: any = {};
 
 Logger.debuggable = false;
-Logger.info = console.info;
-Logger.warn = console.warn;
 Logger.error = console.error;
 
 Object.defineProperty(Logger, 'debug', {
     get() {
-        return Logger.debuggable ? console.debug : (): void => {};
+        return Logger.debuggable
+            ? console.debug
+            : (): void => {
+                  //
+              };
     },
-    set() {},
+    set() {
+        //
+    },
     configurable: false,
 });
 

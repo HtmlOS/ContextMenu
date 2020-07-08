@@ -3,11 +3,13 @@
 import Point from '../utils/Point';
 import ContextMenuItem from '../model/ContextMenuItem';
 import ContextMenuView from '../view/ContextMenuView';
-import {ContextMenuOptions} from '../model/ContextMenu';
+import {ContextMenuOptions, ContextMenu} from '../model/ContextMenu';
 import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
+import Utils from '../utils/Utils';
 
 class ContextMenuPresenter {
+    readonly event: MouseEvent;
     readonly menuOptions: ContextMenuOptions;
     readonly menuPosition: Point;
     readonly menuTree: Map<string, Array<ContextMenuItem>> = new Map();
@@ -17,8 +19,9 @@ class ContextMenuPresenter {
     postSelectionType: 'i' | 'o';
     postSelectionTimerId: NodeJS.Timeout;
 
-    constructor(position: Point, menuItems: Array<ContextMenuItem>, options?: ContextMenuOptions) {
-        this.menuPosition = position;
+    constructor(e: MouseEvent, menuItems: Array<ContextMenuItem>, options?: ContextMenuOptions) {
+        this.event = e;
+        this.menuPosition = Utils.getMouseEventPoint(e);
         this.processMenuTree(this.menuTree, '0', menuItems);
         this.menuOptions = options || new ContextMenuOptions();
         Logger.debug('generate menu tree : ', this.menuTree);
@@ -132,13 +135,14 @@ class ContextMenuPresenter {
                     }
                 },
                 onClicked: (index: number, item: ContextMenuItem): void => {
-                    if (item.onclick) {
-                        item.onclick(index, item);
-                        this.hideMenu();
+                    if (item.onclick && item.onclick(index, item) !== false) {
+                        ContextMenu.hide();
                     }
                 },
-                onRenderStart: (): void => {},
-                onRenderStop: (_): void => {
+                onRenderStart: (): void => {
+                    /* */
+                },
+                onRenderStop: (): void => {
                     this.showMenuStack(ids);
                 },
             };

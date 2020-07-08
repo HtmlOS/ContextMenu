@@ -7,39 +7,30 @@ import Logger from '../utils/Logger';
 
 class ContextMenuOptions {
     i18n?: (key: string) => string;
-    hideOn: { //TODO 
-        windowResize: boolean,
-        windowScroll: boolean,
-        targetScroll: boolean,
-        outerClick: boolean,
-    }
 }
 
-class MenuAutoHideMonitor{
-    static target?: HTMLElement;
-
-}
-
+/**
+ * lib entry
+ */
 class ContextMenu {
     static options?: ContextMenuOptions;
     static presenter?: ContextMenuPresenter;
-    static autoHideMonitor?: MenuAutoHideMonitor;
 
-    static init(globalOptions?: ContextMenuOptions): void {
+    static config(globalOptions?: ContextMenuOptions): void {
         this.options = globalOptions;
     }
+
     static setDebugMode(b: boolean): void {
         Logger.debuggable = b;
     }
 
     static hide(): void {
-        Logger.debug('hide menu');
-
         const e = window.event;
         if (e) {
             Utils.preventEvent(e);
         }
         if (this.presenter != undefined) {
+            Logger.debug('hide menu');
             this.presenter.hideMenu();
             this.presenter = undefined;
         }
@@ -47,7 +38,7 @@ class ContextMenu {
 
     static show(menu: Array<ContextMenuItem>, options?: ContextMenuOptions): void {
         const e = window.event;
-        if (!e || !(e instanceof MouseEvent)) {
+        if (!e || !(e instanceof MouseEvent) || !(e.target instanceof HTMLElement)) {
             return;
         } else {
             Utils.preventEvent(e);
@@ -57,7 +48,7 @@ class ContextMenu {
 
         Logger.debug('show menu', menu);
 
-        this.presenter = new ContextMenuPresenter(Utils.getMouseEventPoint(e), menu, options || this.options);
+        this.presenter = new ContextMenuPresenter(e, menu, options || this.options);
         this.presenter.showMenu();
     }
 }
