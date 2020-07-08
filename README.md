@@ -7,7 +7,7 @@
 
 - [X] 简单易用, 支持html5, vue, react, 等
 - [X] 支持无限多级子菜单
-- [ ] 支持使用`JSON`和`JS MenuBuilder`构建菜单
+- [x] 支持使用`Menu Object`和`Menu Builder`构建菜单
 - [X] 支持点击事件回调
 - [X] 支持菜单选项禁用
 - [X] 支持菜单选项图标

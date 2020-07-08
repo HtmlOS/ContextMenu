@@ -135,7 +135,7 @@ class ContextMenuPresenter {
                     }
                 },
                 onClicked: (index: number, item: ContextMenuItem): void => {
-                    if (item.onclick && item.onclick(index, item) !== false) {
+                    if (item.disabled !== true && item.onclick && item.onclick(index, item) !== false) {
                         ContextMenu.hide();
                     }
                 },
@@ -146,11 +146,16 @@ class ContextMenuPresenter {
                     this.showMenuStack(ids);
                 },
             };
-            menuView.rootView.onmouseenter = (): void => {
+            menuView.rootView.oncontextmenu = (e: Event): void => {
+                Utils.preventEvent(e);
+            };
+            menuView.rootView.onmouseenter = (e: Event): void => {
+                Utils.preventEvent(e);
                 Logger.debug('mouse enter  : ', id);
                 this.postSelection('i', id);
             };
-            menuView.rootView.onmouseleave = (): void => {
+            menuView.rootView.onmouseleave = (e: Event): void => {
+                Utils.preventEvent(e);
                 Logger.debug('mouse out  : ', id);
                 this.postSelection('o', '0');
             };

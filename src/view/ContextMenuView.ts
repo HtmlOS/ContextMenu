@@ -55,7 +55,12 @@ class ContextMenuView {
             index = -1;
         }
         this.visitItems((i, element) => {
-            element.className = i !== index ? CONTEXTMENU_STYLE_ITEM_NORMAL : CONTEXTMENU_STYLE_ITEM_SELECTED;
+            const item = this.items[i];
+            if (item.disabled !== true) {
+                element.className = i !== index ? CONTEXTMENU_STYLE_ITEM_NORMAL : CONTEXTMENU_STYLE_ITEM_SELECTED;
+            } else {
+                element.className = CONTEXTMENU_STYLE_ITEM_DISABLED;
+            }
         });
     }
 
@@ -121,15 +126,17 @@ class ContextMenuView {
     private updateStateChangedListener(): void {
         this.visitItems((index, itemView) => {
             const item = this.items[index];
-            if (item.disabled !== true && this.onStateChangedListener !== undefined) {
+            if (this.onStateChangedListener !== undefined) {
                 itemView.onmouseover = ((index: number, hook: (index: number) => void) => {
-                    return (): void => {
+                    return (e: Event): void => {
+                        Utils.preventEvent(e);
                         Logger.debug('mouse over  : ', this.id, index);
                         hook(index);
                     };
                 })(index, this.onStateChangedListener.onSelected);
                 itemView.onmouseleave = ((index: number, hook: (index: number) => void) => {
-                    return (): void => {
+                    return (e: Event): void => {
+                        Utils.preventEvent(e);
                         Logger.debug('mouse leave : ', this.id, index);
                         hook(-1);
                     };
@@ -140,7 +147,8 @@ class ContextMenuView {
                     item: ContextMenuItem,
                     hook: (index: number, item: ContextMenuItem) => void
                 ) => {
-                    return (): void => {
+                    return (e: Event): void => {
+                        Utils.preventEvent(e);
                         hook(index, item);
                     };
                 })(index, item, this.onStateChangedListener.onClicked);
@@ -282,7 +290,7 @@ class ContextMenuView {
         } else {
             dockH = spaceD >= spaceU ? 'bottom' : 'top';
         }
-        Logger.debug('dock @', dockW, dockH);
+        Logger.debug('menu view dock @', dockW, dockH);
 
         let preX: number;
         let preY: number;

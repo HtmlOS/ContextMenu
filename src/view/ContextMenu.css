@@ -95,6 +95,8 @@
     _filter: none;
     -moz-opacity: 0.6;
     opacity: 0.6;
+
+    pointer-events: none;
 }
 
 .contextmenu_item_selected {

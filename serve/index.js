@@ -22,6 +22,7 @@ const menulist = [
     {
         name: 'delete',
         hotkey: 'ctrl+d | delete',
+        disabled: true,
     },
     {
         name: '',
