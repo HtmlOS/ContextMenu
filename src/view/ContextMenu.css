@@ -5,8 +5,8 @@
     stroke: white;
     border: 0 solid #999;
     border-radius: 1px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding-top: 16px;
+    padding-bottom: 6px;
 
     /* shadow */
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);

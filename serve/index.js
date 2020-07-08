@@ -6,17 +6,20 @@ ContextMenu.setDebugMode(true);
 const menulist = [
     {
         name: 'cut',
-        onclick: (index, item) => {
+        icon: './icon/copy.png',
+        onclick: function (index, item) {
             console.log(index, item);
         },
         children: [{name: 'copy'}, {name: 'paste'}],
     },
     {
         name: 'copy',
+        icon: './icon/copy.png',
         hotkey: 'ctrl+c',
     },
     {
         name: 'paste',
+        icon: './icon/paste.png',
         hotkey: 'ctrl+v',
     },
     {
@@ -29,6 +32,7 @@ const menulist = [
     },
     {
         name: '属性',
+        icon: './icon/about.png',
     },
 ];
 

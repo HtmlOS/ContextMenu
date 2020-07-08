@@ -1,12 +1,12 @@
 'use strict';
 
 class Rect {
-    readonly l: number;
-    readonly t: number;
-    readonly r: number;
-    readonly b: number;
-    readonly w: number;
-    readonly h: number;
+    l: number;
+    t: number;
+    r: number;
+    b: number;
+    w: number;
+    h: number;
 
     constructor(l: number, t: number, w: number, h: number) {
         this.l = l;
@@ -28,6 +28,18 @@ class Rect {
             this.w === rect.w &&
             this.h === rect.h
         );
+    }
+
+    assign(from: Rect): void {
+        if (from == undefined || from === null) {
+            return;
+        }
+        this.l = from.l;
+        this.t = from.t;
+        this.r = from.r;
+        this.b = from.b;
+        this.w = from.w;
+        this.h = from.h;
     }
 }
 

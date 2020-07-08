@@ -4,13 +4,14 @@ import {ContextMenu} from '../model/ContextMenu';
 import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
 import Utils from '../utils/Utils';
+import HashMap from '../model/HashMap';
 
 /**
  * window 事件监听
  * 示例: start(["keydown:27", "keydown:ctrl+27", "mousedown", "resize",...])
  */
 class EventListener {
-    static readonly listeners: Map<string, EventListenerOrEventListenerObject> = new Map();
+    static readonly listeners: HashMap<string, EventListenerOrEventListenerObject> = new HashMap();
     static onevent: () => void;
 
     static stop(): void {

@@ -16,6 +16,7 @@ import ContextMenuItem from '../model/ContextMenuItem';
 import Rect from '../utils/Rect';
 import Utils from '../utils/Utils';
 import Logger from '../utils/Logger';
+import HashMap from '../model/HashMap';
 
 interface OnStateChangedListening {
     onSelected(index: number): void;
@@ -31,7 +32,7 @@ class ContextMenuView {
 
     readonly rootView: HTMLElement;
     readonly rootViewRect: Rect = new Rect(0, 0, 0, 0);
-    readonly itemViewRects: Map<number, Rect> = new Map();
+    readonly itemViewRects: HashMap<number, Rect> = new HashMap();
 
     onStateChangedListening: OnStateChangedListening;
 
@@ -95,13 +96,13 @@ class ContextMenuView {
 
                 Logger.debug('menu view sized: ', width + 'x' + height);
 
-                Object.assign(this.rootViewRect, new Rect(0, 0, width, height));
+                this.rootViewRect.assign(new Rect(0, 0, width, height));
 
                 this.computeItemRects();
 
                 const menuRect: Rect = this.fixedLocation(anchor);
 
-                Object.assign(this.rootViewRect, menuRect);
+                this.rootViewRect.assign(menuRect);
                 Logger.debug('menu view fixed: ', this.rootViewRect.w + 'x' + this.rootViewRect.h, this.rootViewRect);
 
                 view.style.width = menuRect.w + 'px';

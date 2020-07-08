@@ -7,13 +7,14 @@ import {ContextMenuOptions, ContextMenu} from '../model/ContextMenu';
 import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
 import Utils from '../utils/Utils';
+import HashMap from '../model/HashMap';
 
 class ContextMenuPresenter {
     readonly event: MouseEvent;
     readonly menuOptions: ContextMenuOptions;
     readonly menuPosition: Point;
-    readonly menuTree: Map<string, Array<ContextMenuItem>> = new Map();
-    readonly menuStacks: Map<string, ContextMenuView> = new Map();
+    readonly menuTree: HashMap<string, Array<ContextMenuItem>> = new HashMap();
+    readonly menuStacks: HashMap<string, ContextMenuView> = new HashMap();
 
     postSelectionId: string;
     postSelectionType: 'i' | 'o';
@@ -28,7 +29,7 @@ class ContextMenuPresenter {
     }
 
     private processMenuTree(
-        menuTree: Map<string, Array<ContextMenuItem>>,
+        menuTree: HashMap<string, Array<ContextMenuItem>>,
         menuId: string,
         menuItems: Array<ContextMenuItem>
     ): void {
@@ -59,7 +60,7 @@ class ContextMenuPresenter {
             id = '0';
         }
 
-        const newIdMap: Map<string, string> = new Map();
+        const newIdMap: HashMap<string, string> = new HashMap();
         const splits = id.split(',');
 
         while (splits.length > 0) {
