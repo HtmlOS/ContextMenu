@@ -24,6 +24,7 @@ class EventListener {
     static start(events: Array<string>): void {
         for (const event of events) {
             if (event === undefined || event === null || event.trim().length === 0) {
+                Logger.debug('event not found');
                 continue;
             }
             const splits: Array<string> = event.split(':');
@@ -31,19 +32,13 @@ class EventListener {
             splits.shift();
             const codes: Array<string> = splits.length === 0 ? [] : splits;
 
-            Logger.debug('monitor add listener: ', event, type, codes);
-
             const listener = (e: Event): void => {
                 if (e instanceof MouseEvent) {
                     //  step1. 先判断鼠标是否还在菜单区域内
                     const point = Utils.getMouseEventPoint(e);
-                    const menuStacks = ContextMenu.presenter?.menuStacks?.values();
-                    const menuViews = menuStacks !== undefined ? Array.from(menuStacks) : [];
-                    if (menuViews.length > 1) {
-                        // 子菜单存在, 说明鼠标还在菜单区域内
-                        return;
-                    } else if (menuViews.length == 1) {
-                        const rect: DOMRect = menuViews[0].rootView.getBoundingClientRect();
+                    const menuStacks = ContextMenu.presenter?.menuStacks?.values() || [];
+                    for (const view of menuStacks) {
+                        const rect: DOMRect = view.rootView.getBoundingClientRect();
                         if (
                             point.x >= rect.left &&
                             point.x <= rect.right &&
@@ -96,6 +91,8 @@ class EventListener {
                     Logger.error('monitor unsupported event: ', event);
                 }
             };
+
+            Logger.debug('monitor add listener: ', event, type, codes);
             window.addEventListener(type, listener, true);
             this.listeners.set(event, listener);
         }
@@ -194,8 +191,10 @@ class ContextMenuMonitor {
         Logger.debug('monitor start');
 
         const callback = (): void => {
-            ContextMenu.hide();
-            Logger.debug('monitor hidemenu');
+            if (ContextMenu.presenter) {
+                ContextMenu.hide();
+                Logger.debug('monitor hidemenu');
+            }
         };
 
         TargetRectListner.onchanged = callback;
@@ -206,7 +205,7 @@ class ContextMenuMonitor {
             'keydown:27', // 按键:ESC
             'mousedown', // 鼠标按下
             'resize', // 窗口大小变化
-            'scroll', // 滚动
+            // 'scroll', // 滚动
         ]);
     }
 

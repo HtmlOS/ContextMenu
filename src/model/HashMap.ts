@@ -42,10 +42,10 @@ class HashMap<K, V> {
     }
 
     put(key: K, value: V): void {
-        if (!this.containsKey(key)) {
-            this._keys.push(key);
-            this._values.push(value);
-        }
+        this.delete(key);
+
+        this._keys.push(key);
+        this._values.push(value);
     }
 
     get(key: K): V | undefined {
@@ -61,17 +61,18 @@ class HashMap<K, V> {
         return this._values.concat();
     }
 
-    remove(key: K): Array<V> {
+    remove(key: K): V | undefined {
         return this.delete(key);
     }
 
-    delete(key: K): Array<V> {
+    delete(key: K): V | undefined {
         const index = this.indexOfKey(key);
         if (index === -1) {
-            return [];
+            return undefined;
         }
         this._keys.splice(index, 1);
-        return this._values.splice(index, 1);
+        const array = this._values.splice(index, 1);
+        return array.length > 0 ? array[0] : undefined;
     }
 
     clear(): void {

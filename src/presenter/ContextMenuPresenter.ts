@@ -69,11 +69,9 @@ class ContextMenuPresenter {
             splits.pop();
         }
 
-        const newIds: Array<string> = Array.from(newIdMap.keys());
-        const oldIds: Array<string> = Array.from(this.menuStacks.keys());
+        const newIds: Array<string> = newIdMap.keys();
+        const oldIds: Array<string> = this.menuStacks.keys();
 
-        Logger.debug('show menu : id  =', id);
-        Logger.debug('show menu : ids =', newIds);
         /*
          * 如果当前已存在菜单, id 相同的直接使用, 不同的清除
          */
@@ -100,8 +98,8 @@ class ContextMenuPresenter {
     }
 
     private showMenuStack(ids: Array<string>): void {
-        Logger.debug('menu show stacks :', ids);
         ids.sort();
+        Logger.debug('menu show stacks :', ids);
         for (const id of ids) {
             // 已经存在的, 不做处理
 
@@ -152,12 +150,10 @@ class ContextMenuPresenter {
             };
             menuView.rootView.onmouseenter = (e: Event): void => {
                 Utils.preventEvent(e);
-                Logger.debug('mouse enter  : ', id);
                 this.postSelection('i', id);
             };
             menuView.rootView.onmouseleave = (e: Event): void => {
                 Utils.preventEvent(e);
-                Logger.debug('mouse out  : ', id);
                 this.postSelection('o', '0');
             };
 
@@ -179,7 +175,8 @@ class ContextMenuPresenter {
     }
 
     private postSelection(type: 'i' | 'o', id: string): void {
-        if (this.postSelectionType === type && this.postSelectionId.indexOf(id) >= 0) {
+        Logger.debug('menu post stacks : id =', id);
+        if (type === 'i' && this.postSelectionType === type && this.postSelectionId.indexOf(id) >= 0) {
             // 优化鼠标事件的响应顺序, 父元素进入子元素时, 响应 id 最长的
             return;
         }
@@ -187,7 +184,6 @@ class ContextMenuPresenter {
 
         this.postSelectionType = type;
         this.postSelectionId = id;
-        Logger.debug('menu post stacks : id =', id);
         this.postSelectionTimerId = setTimeout(() => {
             this.showMenu(id);
         }, 10);

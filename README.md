@@ -20,17 +20,24 @@
 
 
 | 浏览器| Chrome | FireFox | IE | Safari |
-| --- | --- | --- | --- | --- |
-| 版本| | | 9+ | 11+ |
+|  ---- | ------ | ------- | --- | ----- |
+|  版本  |        |         |  9+ |  11+  |
 
+
+### 主题样式限制
+
+- 使用position:fixed排版
+
+   `注: 这可能会导致一些元素的某些样式会失效(如.contextmenu和.contextmenu_item的margin, 需要使用padding调整)`
 
 ### 如何使用
 
 - 集成
 
 ```shell
+# npm
 npm i contextmenu.ts
-# or
+# yarn
 yarn add contextmenu.ts
 ```
 

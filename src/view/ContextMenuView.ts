@@ -5,7 +5,7 @@ import {
     CONTEXTMENU_STYLE_ITEM_NORMAL,
     CONTEXTMENU_STYLE_ITEM_SELECTED,
     CONTEXTMENU_STYLE_ITEM_DISABLED,
-    CONTEXTMENU_STYLE_ITEM_DIVIDER,
+    CONTEXTMENU_STYLE_DIVIDER,
     CONTEXTMENU_STYLE_ITEM_ICON,
     CONTEXTMENU_STYLE_ITEM_TEXT,
     CONTEXTMENU_STYLE_ITEM_HOTKEY,
@@ -32,6 +32,7 @@ class ContextMenuView {
 
     readonly rootView: HTMLElement;
     readonly rootViewRect: Rect = new Rect(0, 0, 0, 0);
+    readonly itemViewRect: Rect = new Rect(0, 0, 0, 0);
     readonly itemViewRects: HashMap<number, Rect> = new HashMap();
 
     onStateChangedListening: OnStateChangedListening;
@@ -52,15 +53,9 @@ class ContextMenuView {
     }
 
     public select(index?: number): void {
-        if (index === undefined) {
-            index = -1;
-        }
-        this.visitItems((i, element) => {
-            const item = this.items[i];
-            if (item.disabled !== true) {
+        this.visitItems((i, element, item) => {
+            if (item.disabled !== true && !this.isDivider(item)) {
                 element.className = i !== index ? CONTEXTMENU_STYLE_ITEM_NORMAL : CONTEXTMENU_STYLE_ITEM_SELECTED;
-            } else {
-                element.className = CONTEXTMENU_STYLE_ITEM_DISABLED;
             }
         });
     }
@@ -94,51 +89,56 @@ class ContextMenuView {
                 const width: number = view.offsetWidth;
                 const height: number = view.offsetHeight;
 
-                Logger.debug('menu view sized: ', width + 'x' + height);
+                Logger.debug('menu view init size: ', width + 'x' + height);
 
                 this.rootViewRect.assign(new Rect(0, 0, width, height));
 
+                // init compute
                 this.computeItemRects();
 
+                const paddingW = width - this.itemViewRect.w;
+                const paddingH = height - this.itemViewRect.h;
+
+                Logger.debug('menu view padding: ', paddingW, paddingH);
                 const menuRect: Rect = this.fixedLocation(anchor);
 
                 this.rootViewRect.assign(menuRect);
                 Logger.debug('menu view fixed: ', this.rootViewRect.w + 'x' + this.rootViewRect.h, this.rootViewRect);
 
-                view.style.width = menuRect.w + 'px';
-                view.style.height = menuRect.h + 'px';
+                const fixedW = menuRect.w - paddingW;
+                const fixedH = menuRect.h - paddingH;
+                view.style.width = fixedW + 'px';
+                view.style.height = fixedH + 'px';
                 view.style.top = menuRect.t + 'px';
                 view.style.left = menuRect.l + 'px';
                 view.style.visibility = 'visible';
 
-                this.computeItemRects();
-
                 const timeRenderStop = new Date().getTime();
                 const timeRenderCost = timeRenderStop - timeRenderStart;
-                Logger.debug('menu view end : cost ' + timeRenderCost + 'ms');
-                if (this.onStateChangedListener !== undefined) {
-                    this.onStateChangedListener.onRenderStop(timeRenderCost);
-                }
+                Logger.debug('menu view render end : cost ' + timeRenderCost + 'ms');
+
+                // fixed compute
+                setTimeout(() => {
+                    this.computeItemRects();
+                    if (this.onStateChangedListener !== undefined) {
+                        this.onStateChangedListener.onRenderStop(timeRenderCost);
+                    }
+                }, 10);
             }, 10);
         };
         reandering();
     }
 
     private updateStateChangedListener(): void {
-        this.visitItems((index, itemView) => {
-            const item = this.items[index];
+        this.visitItems((index, itemView, item) => {
             if (this.onStateChangedListener !== undefined) {
                 itemView.onmouseover = ((index: number, hook: (index: number) => void) => {
-                    return (e: Event): void => {
-                        Utils.preventEvent(e);
-                        Logger.debug('mouse over  : ', this.id, index);
+                    return (): void => {
                         hook(index);
                     };
                 })(index, this.onStateChangedListener.onSelected);
                 itemView.onmouseleave = ((index: number, hook: (index: number) => void) => {
-                    return (e: Event): void => {
-                        Utils.preventEvent(e);
-                        Logger.debug('mouse leave : ', this.id, index);
+                    return (): void => {
                         hook(-1);
                     };
                 })(index, this.onStateChangedListener.onSelected);
@@ -148,8 +148,7 @@ class ContextMenuView {
                     item: ContextMenuItem,
                     hook: (index: number, item: ContextMenuItem) => void
                 ) => {
-                    return (e: Event): void => {
-                        Utils.preventEvent(e);
+                    return (): void => {
                         hook(index, item);
                     };
                 })(index, item, this.onStateChangedListener.onClicked);
@@ -160,7 +159,13 @@ class ContextMenuView {
     private generateItemView(item: ContextMenuItem): HTMLElement {
         const itemView: HTMLElement = document.createElement('div');
 
-        itemView.className = item.disabled !== true ? CONTEXTMENU_STYLE_ITEM_NORMAL : CONTEXTMENU_STYLE_ITEM_DISABLED;
+        if (this.isDivider(item)) {
+            itemView.className = CONTEXTMENU_STYLE_DIVIDER;
+        } else if (item.disabled === true) {
+            itemView.className = CONTEXTMENU_STYLE_ITEM_DISABLED;
+        } else {
+            itemView.className = CONTEXTMENU_STYLE_ITEM_NORMAL;
+        }
 
         const hasChildren: boolean = item.children !== undefined && item.children.length > 0;
         const showArrow: boolean = hasChildren;
@@ -173,33 +178,24 @@ class ContextMenuView {
         const itemHotkey: string = item.hotkey || '';
 
         if (this.isDivider(item)) {
-            itemView.innerHTML = `
-                    <div class="${CONTEXTMENU_STYLE_ITEM_DIVIDER}"></div>
-                    `;
+            itemView.innerHTML = `<hr/>`;
         } else {
             itemView.innerHTML = `
-
-            <img class="${CONTEXTMENU_STYLE_ITEM_ICON}" src="${itemIcon}" draggable="false" />
-        
-            <div class="${CONTEXTMENU_STYLE_ITEM_TEXT}">${itemName}</div>
-            
-            <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}" style="display:${showHotkey ? 'block' : 'none'}">
-                ${itemHotkey}
-            </div>
-            
-            <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
-                style="display:'block'; visibility: ${showArrow ? 'visible' : 'hidden'}"
-            </div>
-            
-        `;
+                <img class="${CONTEXTMENU_STYLE_ITEM_ICON}" src="${itemIcon}" draggable="false" />
+                <div class="${CONTEXTMENU_STYLE_ITEM_TEXT}">${itemName}</div>
+                <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}" style="display:${showHotkey ? 'block' : 'none'}">
+                    ${itemHotkey}
+                </div>
+                <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
+                    style="display:'block'; visibility: ${showArrow ? 'visible' : 'hidden'}"
+                </div>
+            `;
         }
 
         return itemView;
     }
 
     private generateMenuView(): HTMLElement {
-        Logger.debug('menu view generate start');
-
         const menuView: HTMLElement = document.createElement('div');
 
         menuView.className = CONTEXTMENU_STYLE;
@@ -207,10 +203,9 @@ class ContextMenuView {
         menuView.style.position = 'fixed'; // 生成绝对定位的元素，相对于浏览器窗口进行定位。
         menuView.style.width = 'auto';
         menuView.style.height = 'auto';
-        menuView.style.zIndex = '9999999999';
+        menuView.style.zIndex = '999999999';
         menuView.style.top = 0 + 'px';
         menuView.style.left = 0 + 'px';
-        menuView.style.margin = 0 + 'px'; // 使 css 的 margin 属性失效
 
         for (const i in this.items) {
             const item: ContextMenuItem = this.items[i];
@@ -218,7 +213,6 @@ class ContextMenuView {
             menuView.appendChild(itemView);
         }
 
-        Logger.debug('menu view generate end');
         return menuView;
     }
 
@@ -226,25 +220,38 @@ class ContextMenuView {
         const mL = this.rootViewRect.l;
         const mW = this.rootViewRect.w;
 
-        this.visitItems((index, element) => {
+        let index = 0;
+        Utils.visitElemementChildren(this.rootView, (i, element) => {
             const elementRect = element.getBoundingClientRect();
+            const item = this.items[i];
+            if (!this.isDivider(item)) {
+                const l = mL;
+                const t = elementRect.top;
+                const w = mW;
+                const h = elementRect.height;
+                this.itemViewRects.set(index++, new Rect(l, t, w, h));
+            }
 
-            const l = mL;
-            const t = elementRect.top;
-            const w = mW;
-            const h = elementRect.height;
+            if (i === 0) {
+                this.itemViewRect.t = elementRect.top;
+                this.itemViewRect.l = elementRect.left;
+                this.itemViewRect.r = elementRect.right;
+            }
+            this.itemViewRect.b = elementRect.bottom;
 
-            this.itemViewRects.set(index, new Rect(l, t, w, h));
+            this.itemViewRect.w = this.itemViewRect.r - this.itemViewRect.l;
+            this.itemViewRect.h = this.itemViewRect.b - this.itemViewRect.t;
         });
     }
-    private visitItems(callback: (index: number, child: HTMLElement) => void): void {
+
+    private visitItems(callback: (index: number, element: HTMLElement, item: ContextMenuItem) => void): void {
         let index = 0;
         Utils.visitElemementChildren(this.rootView, (i, element) => {
             const item = this.items[i];
             if (this.isDivider(item)) {
                 return;
             }
-            callback(index++, element);
+            callback(index++, element, item);
         });
     }
 
@@ -300,11 +307,11 @@ class ContextMenuView {
 
         switch (dockW) {
             case 'left':
-                preW = Math.min(mW, spaceL);
+                preW = mW;
                 preX = aL - preW;
                 break;
             case 'right':
-                preW = Math.min(mW, spaceR);
+                preW = mW;
                 preX = aR;
                 break;
         }
