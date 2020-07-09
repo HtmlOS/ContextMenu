@@ -7,14 +7,15 @@
   "module": "dist/contextmenu.esm.js",
   "browser": "dist/contextmenu.js",
   "style": "dist/contextmenu.css",
-  "version": "0.1.1", "scripts": {
+  "version": "0.1.1",
+  "scripts": {
     "prettier": "prettier --write **/*.{js,ts,css}",
     "lint-code": "eslint --fix **/*.{js,ts}",
     "lint-style": "stylelint --fix **/*.css",
     "serve": "rollup -c -w",
     "build": "tsc && cross-env NODE_ENV=production rollup -c",
-    "package:publish": "yarn build && npm publish --access=public",
-    "package:unpublish": "npm unpublish contextmenu.ts --force"
+    "deploy": "npm run build && npm publish --access=public",
+    "undeploy": "npm unpublish contextmenu.ts --force"
   },
   "keywords": [
     "menu",
@@ -65,9 +66,11 @@
     "husky": "^4.2.5",
     "lint-staged": "^10.2.11",
     "livereload": "^0.9.1",
+    "postcss-import": "^12.0.1",
     "postcss-nested": "^4.2.2",
     "postcss-preset-env": "^6.7.0",
     "postcss-simple-vars": "^5.0.2",
+    "postcss-url": "^8.0.0",
     "prettier": "^2.0.5",
     "rollup": "^2.21.0",
     "rollup-plugin-babel": "^4.4.0",
@@ -96,10 +99,7 @@
     "ts-node": "^8.10.2",
     "typescript": "^3.9.6"
   },
-  "dependencies": {
-    "postcss-import": "^12.0.1",
-    "postcss-url": "^8.0.0"
-  },
+  "dependencies": {},
   "engines": {
     "node": ">=8.0.0"
   },
