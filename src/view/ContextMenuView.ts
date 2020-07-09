@@ -67,7 +67,7 @@ class ContextMenuViewHolder {
 
     public select(index?: number): void {
         this.visitItems((i, element, item) => {
-            if (item.disabled !== true && !this.isDivider(item)) {
+            if (item.isEnabled() && !item.isDivider()) {
                 element.className = i !== index ? CONTEXTMENU_STYLE_ITEM_NORMAL : CONTEXTMENU_STYLE_ITEM_SELECTED;
             }
         });
@@ -180,7 +180,7 @@ class ContextMenuViewHolder {
     private generateItemView(item: ContextMenuItem): HTMLElement {
         const itemView: HTMLElement = document.createElement('div');
 
-        if (this.isDivider(item)) {
+        if (item.isDivider()) {
             itemView.className = CONTEXTMENU_STYLE_DIVIDER;
         } else if (item.disabled === true) {
             itemView.className = CONTEXTMENU_STYLE_ITEM_DISABLED;
@@ -195,10 +195,10 @@ class ContextMenuViewHolder {
         const itemIcon: string =
             item.icon || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
         const itemName: string =
-            this.options && this.options.i18n ? this.options.i18n(item.name) || item.name || '' : item.name || '';
+            this.options && this.options.i18n ? this.options.i18n(item.name || '') || item.name || '' : item.name || '';
         const itemHotkey: string = item.hotkey || '';
 
-        if (this.isDivider(item)) {
+        if (item.isDivider()) {
             itemView.innerHTML = `<hr/>`;
         } else {
             itemView.innerHTML = `
@@ -251,7 +251,7 @@ class ContextMenuViewHolder {
         Utils.visitElemementChildren(this.rootView, (i, element) => {
             const elementRect = element.getBoundingClientRect();
             const item = this.items[i];
-            if (!this.isDivider(item)) {
+            if (!item.isDivider()) {
                 const l = mL;
                 const t = elementRect.top;
                 const w = mW;
@@ -275,7 +275,7 @@ class ContextMenuViewHolder {
         let index = 0;
         Utils.visitElemementChildren(this.rootView, (i, element) => {
             const item = this.items[i];
-            if (this.isDivider(item)) {
+            if (item.isDivider()) {
                 return;
             }
             callback(index++, element, item);
@@ -365,10 +365,6 @@ class ContextMenuViewHolder {
 
         Logger.debug('menu view fix location end: menu rect = ', rect);
         return rect;
-    }
-
-    private isDivider(item: ContextMenuItem): boolean {
-        return !item.name || item.name.trim().length === 0;
     }
 }
 

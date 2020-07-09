@@ -4,14 +4,14 @@ import Point from './Point';
 import Rect from './Rect';
 
 class Utils {
-    static preventEvent(e: Event): void {
+    public static preventEvent(e: Event): void {
         e.preventDefault();
         e.stopPropagation();
         e.cancelBubble = true;
         e.returnValue = false;
     }
 
-    static getCurrentScrollTop(): number {
+    public static getCurrentScrollTop(): number {
         let scrollTop = 0;
         if (document.documentElement && document.documentElement.scrollTop) {
             scrollTop = document.documentElement.scrollTop;
@@ -21,7 +21,7 @@ class Utils {
         return scrollTop;
     }
 
-    static getCurrentScrollLeft(): number {
+    public static getCurrentScrollLeft(): number {
         let scrollLeft = 0;
         if (document.documentElement && document.documentElement.scrollLeft) {
             scrollLeft = document.documentElement.scrollLeft;
@@ -31,7 +31,7 @@ class Utils {
         return scrollLeft;
     }
 
-    static getMouseEventPoint(e: MouseEvent): Point {
+    public static getMouseEventPoint(e: MouseEvent): Point {
         const scrollX = Utils.getCurrentScrollLeft();
         const scrollY = Utils.getCurrentScrollTop();
 
@@ -41,7 +41,7 @@ class Utils {
         return new Point(x, y);
     }
 
-    static getClientRect(): Rect {
+    public static getClientRect(): Rect {
         let winWidth = 0;
         let winHeight = 0;
         // 获取窗口宽度
@@ -76,6 +76,24 @@ class Utils {
                 callback(index++, child);
             }
             child = child.nextSibling;
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    public static assignObject(target: any, ...srcs: any[]): void {
+        if (target === undefined || target === null) {
+            return;
+        }
+
+        for (const source of srcs) {
+            if (source === undefined || source === null) {
+                continue;
+            }
+            for (var key in source) {
+                if (Object.prototype.hasOwnProperty.call(source, key)) {
+                    target[key] = source[key];
+                }
+            }
         }
     }
 }

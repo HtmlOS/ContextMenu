@@ -22,9 +22,27 @@ class ContextMenuPresenter {
     constructor(e: MouseEvent, menuItems: Array<ContextMenuItem>, options?: ContextMenuOptions) {
         this.event = e;
         this.menuPosition = Utils.getMouseEventPoint(e);
-        this.processMenuTree(this.menuTree, '0', menuItems);
+        this.processMenuTree(this.menuTree, '0', this.rebuildMenuItems(menuItems));
         this.menuOptions = options || new ContextMenuOptions();
-        Logger.debug('generate menu tree : ', this.menuTree);
+        Logger.debug('generate menu tree : ', menuItems, this.menuTree);
+    }
+
+    private rebuildMenuItems(menuItems: Array<ContextMenuItem>): Array<ContextMenuItem> {
+        const rebuild = (oldItems: Array<ContextMenuItem>): Array<ContextMenuItem> => {
+            const newItems: Array<ContextMenuItem> = new Array<ContextMenuItem>();
+            for (const item of oldItems) {
+                newItems.push(new ContextMenuItem().assgin(item));
+            }
+            return newItems;
+        };
+
+        const newItems: Array<ContextMenuItem> = rebuild(menuItems);
+        for (const item of newItems) {
+            if (item && item.children) {
+                item.children = rebuild(item.children);
+            }
+        }
+        return newItems;
     }
 
     private processMenuTree(
@@ -32,13 +50,19 @@ class ContextMenuPresenter {
         menuId: string,
         menuItems: Array<ContextMenuItem>
     ): void {
-        if (menuItems) {
-            menuTree.set(menuId, menuItems);
-            for (const i in menuItems) {
-                const item = menuItems[i];
-                if (item && item.children) {
-                    menuTree.set(menuId + ',' + i, item.children);
+        if (!menuItems) {
+            return;
+        }
+        menuTree.set(menuId, menuItems);
+
+        let index = 0;
+        for (const i in menuItems) {
+            const item = menuItems[i];
+            if (item && !item.isDivider()) {
+                if (item.children) {
+                    this.processMenuTree(menuTree, menuId + ',' + index, item.children);
                 }
+                index++;
             }
         }
     }
@@ -138,7 +162,7 @@ class ContextMenuPresenter {
                     }
                 },
                 onClicked: (index: number, item: ContextMenuItem): void => {
-                    if (item.disabled !== true && item.onclick) {
+                    if (item.isEnabled() && item.onclick) {
                         ContextMenu.hide();
                         item.onclick(index, item);
                     }

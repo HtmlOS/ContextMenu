@@ -1,32 +1,22 @@
 'use strict';
 
-ContextMenu.debug(false);
+ContextMenu.debug(true);
 
 // const menulist = [{name: 'cut'}];
 const menulist = [
     {
-        name: 'cut',
-        icon: './icon/copy.png',
+        name: '刷新',
+        icon: './icon/refresh.png',
         onclick: function (index, item) {
-            alert(index + ' => ' + JSON.stringify(item, null, 2));
+            window.location.reload();
         },
-        children: [
-            {
-                name: 'copy',
-                icon: './icon/copy.png',
-                onclick: function (index, item) {
-                    alert(index + ' => ' + JSON.stringify(item, null, 2));
-                },
-            },
-            {
-                name: 'paste',
-                icon: './icon/paste.png',
-                onclick: function (index, item) {
-                    alert(index + ' => ' + JSON.stringify(item, null, 2));
-                },
-            },
-        ],
     },
+    {
+        name: '####(^_^)####',
+        hotkey: 'iii orz',
+        disabled: true,
+    },
+    {},
     {
         name: 'copy',
         icon: './icon/copy.png',
@@ -39,17 +29,29 @@ const menulist = [
         name: 'paste',
         icon: './icon/paste.png',
         hotkey: 'ctrl+v',
-        disabled: true,
     },
+    {},
     {
-        name: 'delete',
-        hotkey: 'ctrl+d | delete',
+        name: '新建',
+        hotkey: '',
+        children: [
+            {
+                name: '文件',
+                onclick: function (index, item) {
+                    alert(index + ' => ' + JSON.stringify(item, null, 2));
+                },
+            },
+            {
+                name: '文件夹',
+                onclick: function (index, item) {
+                    alert(index + ' => ' + JSON.stringify(item, null, 2));
+                },
+            },
+        ],
     },
+    {},
     {
-        name: '',
-    },
-    {
-        name: '属性',
+        name: '关于',
         icon: './icon/about.png',
     },
 ];
@@ -63,7 +65,6 @@ ContextMenu.config({
 const body = document.getElementsByTagName('body')[0];
 const div = document.getElementsByClassName('menu-demo')[0];
 div.oncontextmenu = function (e) {
-    console.log(e);
     const radios = document.getElementsByName('theme');
     for (let i in radios) {
         let radio = radios[i];

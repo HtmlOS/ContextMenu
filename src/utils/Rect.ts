@@ -1,5 +1,7 @@
 'use strict';
 
+import Utils from './Utils';
+
 class Rect {
     l: number;
     t: number;
@@ -31,15 +33,7 @@ class Rect {
     }
 
     assign(from: Rect): void {
-        if (from == undefined || from === null) {
-            return;
-        }
-        this.l = from.l;
-        this.t = from.t;
-        this.r = from.r;
-        this.b = from.b;
-        this.w = from.w;
-        this.h = from.h;
+        Utils.assignObject(this, from);
     }
 }
 
