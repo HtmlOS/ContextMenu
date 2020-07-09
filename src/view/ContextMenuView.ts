@@ -25,7 +25,19 @@ interface OnStateChangedListening {
     onRenderStop(costTime: number): void;
 }
 
-class ContextMenuView {
+class ContextMenuViewGlobal {
+    static getMenuStacks(): HashMap<string, ContextMenuViewHolder> {
+        const elements = document.getElementsByClassName(CONTEXTMENU_STYLE);
+        const stacks: HashMap<string, ContextMenuViewHolder> = new HashMap();
+        for (let i = 0; i < elements.length; i++) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const item: any = elements[i];
+            stacks.put(item.id, item['holder']);
+        }
+        return stacks;
+    }
+}
+class ContextMenuViewHolder {
     readonly options: ContextMenuOptions;
     readonly id: string;
     readonly items: Array<ContextMenuItem>;
@@ -43,6 +55,7 @@ class ContextMenuView {
         this.options = options;
         this.rootView = this.generateMenuView();
     }
+
     get onStateChangedListener(): OnStateChangedListening {
         return this.onStateChangedListening;
     }
@@ -82,6 +95,11 @@ class ContextMenuView {
 
         const reandering = (): void => {
             setTimeout(() => {
+                const holder = ContextMenuViewGlobal.getMenuStacks().get(this.id);
+                if (holder && holder !== this) {
+                    Logger.debug('menu view destroyed');
+                    return;
+                }
                 if (!view.offsetWidth || !view.offsetHeight) {
                     reandering();
                     Logger.debug('menu view rendering');
@@ -202,6 +220,12 @@ class ContextMenuView {
         const menuView: HTMLElement = document.createElement('div');
 
         menuView.className = CONTEXTMENU_STYLE;
+
+        menuView.id = this.id;
+        Object.defineProperty(menuView, 'holder', {
+            value: this,
+            writable: false,
+        });
 
         menuView.style.position = 'fixed'; // 生成绝对定位的元素，相对于浏览器窗口进行定位。
         menuView.style.width = 'auto';
@@ -348,4 +372,4 @@ class ContextMenuView {
     }
 }
 
-export default ContextMenuView;
+export {ContextMenuViewGlobal, ContextMenuViewHolder};

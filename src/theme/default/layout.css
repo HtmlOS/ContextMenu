@@ -75,15 +75,14 @@
 }
 
 .contextmenu > .contextmenu_item > .contextmenu_item_text {
-    margin-left: 4px;
-    margin-right: 16px;
+    padding-left: 4px;
+    padding-right: 16px;
     flex-grow: 1;
     word-break: keep-all;
     white-space: nowrap;
 }
 
 .contextmenu > .contextmenu_item > .contextmenu_item_hotkey {
-    margin-left: 8px;
     word-break: keep-all;
     white-space: nowrap;
 }
@@ -93,6 +92,5 @@
     height: 16px;
     min-width: 16px;
     min-height: 16px;
-    margin-left: 8px;
-    margin-right: 8px;
+    margin-right: 6px;
 }

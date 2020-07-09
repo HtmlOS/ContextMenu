@@ -2,7 +2,7 @@
 
 import Point from '../utils/Point';
 import ContextMenuItem from '../model/ContextMenuItem';
-import ContextMenuView from '../view/ContextMenuView';
+import {ContextMenuViewGlobal, ContextMenuViewHolder} from '../view/ContextMenuView';
 import {ContextMenuOptions, ContextMenu} from '../model/ContextMenu';
 import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
@@ -14,7 +14,6 @@ class ContextMenuPresenter {
     readonly menuOptions: ContextMenuOptions;
     readonly menuPosition: Point;
     readonly menuTree: HashMap<string, Array<ContextMenuItem>> = new HashMap();
-    readonly menuStacks: HashMap<string, ContextMenuView> = new HashMap();
 
     postSelectionId: string;
     postSelectionType: 'i' | 'o';
@@ -69,8 +68,9 @@ class ContextMenuPresenter {
             splits.pop();
         }
 
+        const menuStacks = ContextMenuViewGlobal.getMenuStacks();
         const newIds: Array<string> = newIdMap.keys();
-        const oldIds: Array<string> = this.menuStacks.keys();
+        const oldIds: Array<string> = menuStacks.keys();
 
         /*
          * 如果当前已存在菜单, id 相同的直接使用, 不同的清除
@@ -89,10 +89,11 @@ class ContextMenuPresenter {
     }
 
     private hideMenuStack(id: string): void {
-        this.menuStacks.forEach((value, key) => {
+        const menuStacks = ContextMenuViewGlobal.getMenuStacks();
+        menuStacks.forEach((value, key) => {
             if (key.indexOf(id) >= 0) {
                 value.hide();
-                this.menuStacks.delete(key);
+                menuStacks.delete(key);
             }
         });
     }
@@ -100,19 +101,22 @@ class ContextMenuPresenter {
     private showMenuStack(ids: Array<string>): void {
         ids.sort();
         Logger.debug('menu show stacks :', ids);
+
+        const menuStacks = ContextMenuViewGlobal.getMenuStacks();
+
         for (const id of ids) {
             // 已经存在的, 不做处理
 
             const hasParent = id.indexOf(',') >= 0;
             const parentIndex = parseInt(!hasParent ? id : id.substr(id.lastIndexOf(',') + 1));
             const parentId = !hasParent ? undefined : id.substr(0, id.lastIndexOf(','));
-            const parentView = parentId === undefined ? undefined : this.menuStacks.get(parentId);
+            const parentView = parentId === undefined ? undefined : menuStacks.get(parentId);
 
             if (parentView !== undefined) {
                 parentView.select(parentIndex);
             }
 
-            const exist = this.menuStacks.get(id);
+            const exist = menuStacks.get(id);
             if (exist !== undefined) {
                 exist.select(-1);
                 continue;
@@ -123,7 +127,7 @@ class ContextMenuPresenter {
             if (!menuItems) {
                 return;
             }
-            const menuView: ContextMenuView = new ContextMenuView(id, menuItems, this.menuOptions);
+            const menuView: ContextMenuViewHolder = new ContextMenuViewHolder(id, menuItems, this.menuOptions);
 
             menuView.onStateChangedListener = {
                 onSelected: (index: number): void => {
@@ -169,7 +173,6 @@ class ContextMenuPresenter {
                 }
                 menuView.show(anchorRect);
             }
-            this.menuStacks.set(id, menuView);
 
             return;
         }

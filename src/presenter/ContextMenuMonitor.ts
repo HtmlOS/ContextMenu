@@ -5,6 +5,7 @@ import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
 import Utils from '../utils/Utils';
 import HashMap from '../model/HashMap';
+import {ContextMenuViewGlobal} from '../view/ContextMenuView';
 
 /**
  * window 事件监听
@@ -36,7 +37,7 @@ class EventListener {
                 if (e instanceof MouseEvent) {
                     //  step1. 先判断鼠标是否还在菜单区域内
                     const point = Utils.getMouseEventPoint(e);
-                    const menuStacks = ContextMenu.presenter?.menuStacks?.values() || [];
+                    const menuStacks = ContextMenuViewGlobal.getMenuStacks().values() || [];
                     for (const view of menuStacks) {
                         const rect: DOMRect = view.rootView.getBoundingClientRect();
                         if (
@@ -74,6 +75,9 @@ class EventListener {
                     }
                     if (e.which !== undefined) {
                         code = code === undefined ? e.which : Math.max(code, e.which);
+                    }
+                    if (code === 16 || code === 17 || code === 18 || code === 224) {
+                        code = undefined;
                     }
                     const keys: Array<string> = [
                         code !== undefined ? '' + code : '',
@@ -153,8 +157,9 @@ class TargetRectListner {
 
     public static start(): void {
         this.stop();
-        this.run();
+
         this.stopped = false;
+        this.run();
     }
 
     private static run(): void {
