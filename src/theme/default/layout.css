@@ -1,0 +1,98 @@
+/*
+ *****************************************************************
+ * root style
+ *****************************************************************
+ */
+
+.contextmenu {
+    overflow: auto;
+    padding-top: 8px;
+    padding-bottom: 8px;
+
+    /* no select */
+
+    /* moz-user-select: -moz-none; */
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/*
+ *****************************************************************
+ * divier style
+ *****************************************************************
+ */
+.contextmenu > .contextmenu_divider {
+    /* 居中 */
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    display: -webkit-flex;
+}
+
+.contextmenu > .contextmenu_divider > hr {
+    width: 96%;
+    height: 1px;
+    margin: 2px;
+}
+
+/*
+ *****************************************************************
+ * item style
+ *****************************************************************
+ */
+
+.contextmenu > .contextmenu_item {
+    /* 居中 */
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    display: -webkit-flex;
+    padding: 3px;
+}
+
+.contextmenu > .contextmenu_item.contextmenu_item_selected {
+    pointer-events: auto;
+}
+
+.contextmenu > .contextmenu_item.contextmenu_item_disabled {
+    pointer-events: none;
+}
+
+.contextmenu > .contextmenu_item > .contextmenu_item_icon {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    margin: 6px;
+}
+
+.contextmenu > .contextmenu_item > .contextmenu_item_text {
+    margin-left: 4px;
+    margin-right: 16px;
+    flex-grow: 1;
+    word-break: keep-all;
+    white-space: nowrap;
+}
+
+.contextmenu > .contextmenu_item > .contextmenu_item_hotkey {
+    margin-left: 8px;
+    word-break: keep-all;
+    white-space: nowrap;
+}
+
+.contextmenu > .contextmenu_item > .contextmenu_item_arrow {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+    margin-left: 8px;
+    margin-right: 8px;
+}

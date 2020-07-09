@@ -6,6 +6,7 @@ import ContextMenuItem from './ContextMenuItem';
 import Logger from '../utils/Logger';
 
 class ContextMenuOptions {
+    layer?: HTMLElement;
     i18n?: (key: string) => string;
 }
 

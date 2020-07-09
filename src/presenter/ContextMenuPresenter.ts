@@ -134,8 +134,9 @@ class ContextMenuPresenter {
                     }
                 },
                 onClicked: (index: number, item: ContextMenuItem): void => {
-                    if (item.disabled !== true && item.onclick && item.onclick(index, item) !== false) {
+                    if (item.disabled !== true && item.onclick) {
                         ContextMenu.hide();
+                        item.onclick(index, item);
                     }
                 },
                 onRenderStart: (): void => {

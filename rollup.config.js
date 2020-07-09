@@ -16,11 +16,12 @@ import sourceMaps from 'rollup-plugin-sourcemaps';
 
 // PostCSS plugins
 import postcss from 'rollup-plugin-postcss';
-import simplevars from 'postcss-simple-vars';
-
-import cssnested from 'postcss-nested';
-import cssnext from 'postcss-preset-env';
-import cssnano from 'cssnano';
+import cssPreset from 'postcss-preset-env';
+import cssNested from 'postcss-nested';
+import cssUrl from 'postcss-url';
+import cssImport from 'postcss-import';
+import cssSimpleVars from 'postcss-simple-vars';
+import cssNano from 'cssnano';
 
 // 最小化编译
 import {terser} from 'rollup-plugin-terser';
@@ -104,7 +105,14 @@ export default {
         }),
         postcss({
             extract: true,
-            plugins: [simplevars(), cssnested(), cssnext({warnForDuplicates: false}), cssnano()],
+            plugins: [
+                cssImport,
+                cssUrl({url: 'inline'}),
+                cssSimpleVars(),
+                cssNested(),
+                cssPreset({warnForDuplicates: false}),
+                cssNano(),
+            ],
             extensions: ['.css'],
         }),
         sourceMaps(),

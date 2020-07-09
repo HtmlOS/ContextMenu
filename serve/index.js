@@ -9,7 +9,6 @@ const menulist = [
         icon: './icon/copy.png',
         onclick: function (index, item) {
             alert(index + ' => ' + JSON.stringify(item, null, 2));
-            return true; // 默认true, 事件已消费, 关闭菜单
         },
         children: [
             {
@@ -34,18 +33,17 @@ const menulist = [
         hotkey: 'ctrl+c',
         onclick: function (index, item) {
             alert(index + ' => ' + JSON.stringify(item, null, 2));
-            return false; // 事件未消费, 不会关闭菜单
         },
     },
     {
         name: 'paste',
         icon: './icon/paste.png',
         hotkey: 'ctrl+v',
+        disabled: true,
     },
     {
         name: 'delete',
         hotkey: 'ctrl+d | delete',
-        disabled: true,
     },
     {
         name: '',
@@ -56,8 +54,22 @@ const menulist = [
     },
 ];
 
-const div = document.getElementsByClassName('root')[0];
+ContextMenu.config({
+    i18n: function (s) {
+        return 'i18n(' + s + ')';
+    },
+});
+
+const body = document.getElementsByTagName('body')[0];
+const div = document.getElementsByClassName('menu-demo')[0];
 div.oncontextmenu = function (e) {
     console.log(e);
+    const radios = document.getElementsByName('theme');
+    for (let i in radios) {
+        let radio = radios[i];
+        if (radio.checked) {
+            body.className = radio.value;
+        }
+    }
     ContextMenu.show(menulist);
 };

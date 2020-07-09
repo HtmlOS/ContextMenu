@@ -97,7 +97,10 @@
     "ts-node": "^8.10.2",
     "typescript": "^3.9.6"
   },
-  "dependencies": {},
+  "dependencies": {
+    "postcss-import": "^12.0.1",
+    "postcss-url": "^8.0.0"
+  },
   "engines": {
     "node": ">=8.0.0"
   },

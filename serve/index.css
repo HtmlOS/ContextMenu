@@ -1,3 +1,6 @@
+@import './contextmenu_light.css';
+@import './contextmenu_dark.css';
+
 html,
 body {
     margin: 0;
@@ -12,6 +15,28 @@ body {
 }
 
 .root {
-    width: 120vw;
-    height: 120vh;
+    width: 90vw;
+    height: 90vh;
+    max-width: 120vw;
+    max-height: 120vh;
+    padding: 32px;
+}
+
+.menu-demo {
+    width: 75vw;
+    height: 50vh;
+    stroke-width: 2px;
+    stroke: black;
+    background: whitesmoke;
+    padding: 16px;
+}
+
+.menu-click-area {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    justify-content: center;
 }

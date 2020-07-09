@@ -1,23 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>ContextMenu</title>
+    <head>
+        <meta charset="UTF-8" />
+        <title>ContextMenu</title>
 
-    <script type="text/javascript" src="./contextmenu.js"></script>
-    <link type="text/css" rel="stylesheet" href="./contextmenu.css">
-    <link type="text/css" rel="stylesheet" href="./index.css">
+        <script type="text/javascript" src="./contextmenu.js"></script>
+        <link type="text/css" rel="stylesheet" href="./contextmenu.css" />
+        <link type="text/css" rel="stylesheet" href="./index.css" />
+    </head>
 
-</head>
-<body>
+    <body >
+        <div class="root">
+            <h1>
+                Web Serve is Running !
+            </h1>
+            <h5>HomePage: <a href="https://github.com/HtmlOS/contextmenu">Html@ContextMenu</a></h5>
 
-<div class="root">
+            <div class="menu-demo">
+                <div class="menu-options">
+                    <form >
+                        Theme ：
+                        <input type="radio" name="theme" value="" checked="true" /> Default
+                        <input type="radio" name="theme" value="light"/> Light
+                        <input type="radio" name="theme" value="dark" /> Dark
+                    </form>
+                </div>
+                <div class="menu-click-area">
+                    Right Click This Area
+                </div>
+            </div>
+        </div>
 
-    Web is Running !
-
-</div>
-
-<script type="text/javascript" src="index.js"></script>
-
-</body>
+        <script type="text/javascript" src="index.js"></script>
+    </body>
 </html>

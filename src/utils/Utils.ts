@@ -35,8 +35,8 @@ class Utils {
         const scrollX = Utils.getCurrentScrollLeft();
         const scrollY = Utils.getCurrentScrollTop();
 
-        const x = e.pageX - scrollX || e.clientX;
-        const y = e.pageY - scrollY || e.clientY;
+        const x = e.clientX || e.pageX - scrollX;
+        const y = e.clientY || e.pageY - scrollY;
 
         return new Point(x, y);
     }

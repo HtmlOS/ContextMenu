@@ -62,7 +62,8 @@ class ContextMenuView {
 
     public hide(): void {
         const view = this.rootView;
-        document.body.removeChild(view);
+        const layer = this.options?.layer || document.body;
+        layer.removeChild(view);
     }
 
     public show(anchor: Rect): void {
@@ -76,7 +77,8 @@ class ContextMenuView {
             this.onStateChangedListener.onRenderStart();
         }
 
-        document.body.appendChild(view);
+        const layer = this.options?.layer || document.body;
+        layer.appendChild(view);
 
         const reandering = (): void => {
             setTimeout(() => {
@@ -148,7 +150,8 @@ class ContextMenuView {
                     item: ContextMenuItem,
                     hook: (index: number, item: ContextMenuItem) => void
                 ) => {
-                    return (): void => {
+                    return (e: Event): void => {
+                        Utils.preventEvent(e);
                         hook(index, item);
                     };
                 })(index, item, this.onStateChangedListener.onClicked);
