@@ -6,6 +6,7 @@ import Logger from '../utils/Logger';
 import Utils from '../utils/Utils';
 import HashMap from '../model/HashMap';
 import {ContextMenuViewGlobal} from '../view/ContextMenuView';
+import Point from '../utils/Point';
 
 /**
  * window 事件监听
@@ -13,7 +14,7 @@ import {ContextMenuViewGlobal} from '../view/ContextMenuView';
  */
 class EventListener {
     static readonly listeners: HashMap<string, EventListenerOrEventListenerObject> = new HashMap();
-    static onevent: () => void;
+    static onevent: (event: string) => void;
 
     static stop(): void {
         this.listeners.forEach((value, key) => {
@@ -39,13 +40,8 @@ class EventListener {
                     const point = Utils.getMouseEventPoint(e);
                     const menuStacks = ContextMenuViewGlobal.getMenuStacks().values() || [];
                     for (const view of menuStacks) {
-                        const rect: DOMRect = view.rootView.getBoundingClientRect();
-                        if (
-                            point.x >= rect.left &&
-                            point.x <= rect.right &&
-                            point.y >= rect.top &&
-                            point.y <= rect.bottom
-                        ) {
+                        const rect: Rect = Utils.getBoundingClientRect(view.rootView);
+                        if (point.x >= rect.l && point.x <= rect.r && point.y >= rect.t && point.y <= rect.b) {
                             // 鼠标还在根菜单区域内
                             return;
                         }
@@ -64,7 +60,7 @@ class EventListener {
                         return;
                     }
 
-                    this.onevent();
+                    this.onevent(event);
                 } else if (e instanceof KeyboardEvent) {
                     let code: number | undefined = undefined;
                     if (e.keyCode !== undefined) {
@@ -87,10 +83,10 @@ class EventListener {
                         e.shiftKey ? 'shift' : '',
                     ];
                     if (this.containsKey(codes, keys.join('+'))) {
-                        this.onevent();
+                        this.onevent(event);
                     }
                 } else if (codes.length === 0) {
-                    this.onevent();
+                    this.onevent(event);
                 } else {
                     Logger.error('monitor unsupported event: ', event);
                 }
@@ -143,9 +139,10 @@ class TargetRectListner {
     static timer?: NodeJS.Timeout;
     static stopped: boolean;
 
+    static targetPoint?: Point;
     static targetRect?: Rect;
 
-    static onchanged: () => void;
+    static onchanged: (event: string) => void;
 
     public static stop(): void {
         this.stopped = true;
@@ -167,14 +164,20 @@ class TargetRectListner {
             return;
         }
         this.timer = setTimeout(() => {
-            const target = ContextMenu.presenter?.event.target;
-            if (target instanceof HTMLElement) {
-                const clientRect = target.getBoundingClientRect();
-                const domRect = new Rect(clientRect.left, clientRect.top, clientRect.right, clientRect.bottom);
-                if (this.targetRect !== undefined && !domRect.equals(this.targetRect)) {
+            const event = ContextMenu.presenter?.event;
+            const target = event?.target;
+            if (event && target instanceof HTMLElement) {
+                const rect = Utils.getBoundingClientRect(target);
+                const point = Utils.getMouseEventPoint(event);
+                if (this.targetPoint !== undefined && !point.equals(this.targetPoint)) {
+                    return;
+                } else {
+                    this.targetRect = rect;
+                }
+                if (this.targetRect !== undefined && !rect.equals(this.targetRect)) {
                     this.hide();
                 } else {
-                    this.targetRect = domRect;
+                    this.targetRect = rect;
                 }
             }
             this.run();
@@ -184,7 +187,7 @@ class TargetRectListner {
     private static hide(): void {
         this.targetRect = undefined;
         if (this.onchanged) {
-            this.onchanged();
+            this.onchanged('other:target moved or resize');
         }
     }
 }
@@ -195,10 +198,10 @@ class ContextMenuMonitor {
     public static start(): void {
         Logger.debug('monitor start');
 
-        const callback = (): void => {
+        const callback = (event: string): void => {
             if (ContextMenu.presenter) {
                 ContextMenu.hide();
-                Logger.debug('monitor hidemenu');
+                Logger.debug('monitor hidemenu by ', event);
             }
         };
 

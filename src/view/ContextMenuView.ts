@@ -249,22 +249,22 @@ class ContextMenuViewHolder {
 
         let index = 0;
         Utils.visitElemementChildren(this.rootView, (i, element) => {
-            const elementRect = element.getBoundingClientRect();
+            const elementRect = Utils.getBoundingClientRect(element);
             const item = this.items[i];
             if (!item.isDivider()) {
                 const l = mL;
-                const t = elementRect.top;
+                const t = elementRect.t;
                 const w = mW;
-                const h = elementRect.height;
+                const h = elementRect.h;
                 this.itemViewRects.set(index++, new Rect(l, t, w, h));
             }
 
             if (i === 0) {
-                this.itemViewRect.t = elementRect.top;
-                this.itemViewRect.l = elementRect.left;
-                this.itemViewRect.r = elementRect.right;
+                this.itemViewRect.t = elementRect.t;
+                this.itemViewRect.l = elementRect.l;
+                this.itemViewRect.r = elementRect.r;
             }
-            this.itemViewRect.b = elementRect.bottom;
+            this.itemViewRect.b = elementRect.b;
 
             this.itemViewRect.w = this.itemViewRect.r - this.itemViewRect.l;
             this.itemViewRect.h = this.itemViewRect.b - this.itemViewRect.t;
@@ -283,7 +283,8 @@ class ContextMenuViewHolder {
     }
 
     private fixedLocation(anchor: Rect): Rect {
-        const clientRect: Rect = Utils.getClientRect();
+        const clientRect: Rect = Utils.getClientRect(4);
+
         Logger.debug('menu view fix location start: screen rect = ', clientRect);
 
         const mW: number = this.rootViewRect.w;

@@ -41,7 +41,8 @@ class Utils {
         return new Point(x, y);
     }
 
-    public static getClientRect(): Rect {
+    public static getClientRect(padding?: number): Rect {
+        padding = padding || 0;
         let winWidth = 0;
         let winHeight = 0;
         // 获取窗口宽度
@@ -62,9 +63,15 @@ class Utils {
             winWidth = document.documentElement.clientWidth;
         }
 
-        return new Rect(0, 0, winWidth, winHeight);
+        return new Rect(padding, padding, winWidth - padding * 2, winHeight - padding * 2);
     }
 
+    public static getBoundingClientRect(element: Element): Rect {
+        const dom = element.getBoundingClientRect();
+        const top = dom.top - document.documentElement.clientTop;
+        const left = dom.left - document.documentElement.clientLeft;
+        return new Rect(left, top, dom.right - left, dom.bottom - top);
+    }
     public static visitElemementChildren(
         element: HTMLElement,
         callback: (index: number, child: HTMLElement) => void
