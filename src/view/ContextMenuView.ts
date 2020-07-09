@@ -113,7 +113,6 @@ class ContextMenuView {
                 view.style.height = fixedH + 'px';
                 view.style.top = menuRect.t + 'px';
                 view.style.left = menuRect.l + 'px';
-                view.style.visibility = 'visible';
 
                 const timeRenderStop = new Date().getTime();
                 const timeRenderCost = timeRenderStop - timeRenderStart;
@@ -121,6 +120,7 @@ class ContextMenuView {
 
                 // fixed compute
                 setTimeout(() => {
+                    view.style.visibility = 'visible';
                     this.computeItemRects();
                     if (this.onStateChangedListener !== undefined) {
                         this.onStateChangedListener.onRenderStop(timeRenderCost);
