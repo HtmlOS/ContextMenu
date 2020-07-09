@@ -21,7 +21,7 @@ class ContextMenu {
         this.options = globalOptions;
     }
 
-    static setDebugMode(b: boolean): void {
+    static debug(b: boolean): void {
         Logger.debuggable = b;
     }
 

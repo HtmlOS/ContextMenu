@@ -1,6 +1,6 @@
 'use strict';
 
-ContextMenu.setDebugMode(true);
+ContextMenu.debug(false);
 
 // const menulist = [{name: 'cut'}];
 const menulist = [
