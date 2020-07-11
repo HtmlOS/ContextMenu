@@ -15,7 +15,7 @@
     "serve": "rollup -c -w",
     "build": "tsc && cross-env NODE_ENV=production rollup -c",
     "deploy": "npm run build && npm publish --access=public",
-    "undeploy": "npm unpublish contextmenu.ts --force"
+    "undeploy": "npm unpublish @htmlos/contextmenu --force"
   },
   "keywords": [
     "menu",
