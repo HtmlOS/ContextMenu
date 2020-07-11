@@ -1,7 +1,5 @@
 'use strict';
 
-import Utils from '../utils/Utils';
-
 /**
  * menu item
  */
@@ -13,17 +11,31 @@ class ContextMenuItem {
     disabled?: boolean;
     onclick?: (index: number, item: ContextMenuItem) => void;
 
-    assgin(item: ContextMenuItem): ContextMenuItem {
-        Utils.assignObject(this, item);
-        return this;
+    static isDivider(item: ContextMenuItem): boolean {
+        if (!item) {
+            return true;
+        }
+        if (this.hasArrow(item)) {
+            return false;
+        }
+        if (item.name && item.name.trim().length > 0) {
+            return false;
+        }
+        return true;
     }
 
-    isDivider(): boolean {
-        return (!this.name || this.name.trim().length === 0) && !(this.children && this.children.length === 0);
+    static isEnabled(item: ContextMenuItem): boolean {
+        return item.disabled !== true;
     }
 
-    isEnabled(): boolean {
-        return this.disabled !== true;
+    static hasArrow(item: ContextMenuItem): boolean {
+        if (!item) {
+            return false;
+        }
+        if (item.children && item.children.length > 0) {
+            return true;
+        }
+        return false;
     }
 }
 

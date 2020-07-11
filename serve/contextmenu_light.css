@@ -1,21 +1,21 @@
-.light > .contextmenu {
+.light .contextmenu {
     background: white;
     stroke: white;
     border: 0 solid #999;
 }
 
-.light > .contextmenu > .contextmenu_divider > hr {
+.light .contextmenu .contextmenu_divider hr {
     background: rgba(196, 196, 196, 0.5);
 }
 
-.light > .contextmenu > .contextmenu_item_selected {
+.light .contextmenu .contextmenu_item_selected {
     background: lightblue;
 }
 
-.light > .contextmenu > .contextmenu_item > .contextmenu_item_text {
+.light .contextmenu .contextmenu_item .contextmenu_item_text {
     color: rgba(189, 72, 72, 0.9);
 }
 
-.light > .contextmenu > .contextmenu_item > .contextmenu_item_hotkey {
+.light .contextmenu .contextmenu_item .contextmenu_item_hotkey {
     color: #aaa;
 }

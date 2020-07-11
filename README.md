@@ -27,13 +27,12 @@
 
 ### 主题样式限制
 
-- 使用position:fixed排版
-
-   `注: 这可能会导致一些元素的某些样式会失效(如.contextmenu和.contextmenu_item的margin, 需要使用padding调整)`
-
-- 不要使用会影响菜单大小的动画
-  
-  `菜单生成后是固定高宽, 如果使用了会影响菜单大小的动画(如放大), 可能会引起排版紊乱`
+- 属性限制
+  - 内部使用`position:fixed`排版, 这会导致一些元素的某些样式会失效(如`.contextmenu`和`.contextmenu_item`的`margin`, 需要使用`padding`调整)
+- 动画限制
+  - `.contextmenu`不要使用`transition`动画属性, 这不仅可能会在加载过程看不到, 还会影响后续自动定位, 
+  - `.contextmenu_item`不要使用会影响尺寸的动画, 如果使用了可能会引起排版紊乱, 因为菜单可见后已经的固定大小的了
+  - 其他动画属性请自测
 
 ### 如何使用
 

@@ -2,15 +2,15 @@
 
 import './theme/default/index.css';
 
-import {ContextMenu} from './model/ContextMenu';
-import ContextMenuMonitor from './presenter/ContextMenuMonitor';
+import {ContextMenu, ContextMenuOptions} from './model/ContextMenu';
 
-Object.defineProperty(window, 'ContextMenu', {
-    value: ContextMenu,
-    writable: false,
-    configurable: false,
-});
+const contextMenuGlobal = new ContextMenu();
+if (window) {
+    Object.defineProperty(window, 'ContextMenu', {
+        value: contextMenuGlobal,
+        writable: false,
+        configurable: false,
+    });
+}
 
-ContextMenuMonitor.start();
-
-export default ContextMenu;
+export {contextMenuGlobal as ContextMenu, ContextMenuOptions};

@@ -96,7 +96,7 @@ class Utils {
             if (source === undefined || source === null) {
                 continue;
             }
-            for (var key in source) {
+            for (const key in source) {
                 if (Object.prototype.hasOwnProperty.call(source, key)) {
                     target[key] = source[key];
                 }

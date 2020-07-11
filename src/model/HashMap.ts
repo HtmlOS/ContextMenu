@@ -5,6 +5,10 @@ class HashMap<K, V> {
     readonly _keys: Array<K> = [];
     readonly _values: Array<V> = [];
 
+    size(): number {
+        return this._keys.length;
+    }
+
     indexOfKey(key: K): number {
         for (const i in this._keys) {
             const item = this._keys[i];

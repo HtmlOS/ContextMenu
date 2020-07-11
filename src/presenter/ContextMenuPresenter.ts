@@ -2,69 +2,64 @@
 
 import Point from '../utils/Point';
 import ContextMenuItem from '../model/ContextMenuItem';
-import {ContextMenuViewGlobal, ContextMenuViewHolder} from '../view/ContextMenuView';
-import {ContextMenuOptions, ContextMenu} from '../model/ContextMenu';
+import {ContextMenuViewHolder} from '../view/ContextMenuView';
+import {ContextMenuOptions} from '../model/ContextMenu';
 import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
 import Utils from '../utils/Utils';
 import HashMap from '../model/HashMap';
 
 class ContextMenuPresenter {
+    readonly id: string = new Date().toUTCString();
     readonly event: MouseEvent;
+    readonly menuItems: Array<ContextMenuItem>;
     readonly menuOptions: ContextMenuOptions;
     readonly menuPosition: Point;
-    readonly menuTree: HashMap<string, Array<ContextMenuItem>> = new HashMap();
+    readonly menuStacks: HashMap<string, ContextMenuViewHolder> = new HashMap();
+
+    onItemClick?: (index: number, item: ContextMenuItem) => void;
 
     postSelectionId: string;
     postSelectionType: 'i' | 'o';
     postSelectionTimerId: NodeJS.Timeout;
 
+    destroyed: boolean;
+
     constructor(e: MouseEvent, menuItems: Array<ContextMenuItem>, options?: ContextMenuOptions) {
         this.event = e;
+        this.menuItems = menuItems;
         this.menuPosition = Utils.getMouseEventPoint(e);
-        this.processMenuTree(this.menuTree, '0', this.rebuildMenuItems(menuItems));
         this.menuOptions = options || new ContextMenuOptions();
-        Logger.debug('generate menu tree : ', menuItems, this.menuTree);
     }
 
-    private rebuildMenuItems(menuItems: Array<ContextMenuItem>): Array<ContextMenuItem> {
-        const rebuild = (oldItems: Array<ContextMenuItem>): Array<ContextMenuItem> => {
-            const newItems: Array<ContextMenuItem> = new Array<ContextMenuItem>();
-            for (const item of oldItems) {
-                newItems.push(new ContextMenuItem().assgin(item));
-            }
-            return newItems;
-        };
-
-        const newItems: Array<ContextMenuItem> = rebuild(menuItems);
-        for (const item of newItems) {
-            if (item && item.children) {
-                item.children = rebuild(item.children);
-            }
+    private getMenuItemsById(id: string): Array<ContextMenuItem> | undefined {
+        if (!id || id === '0') {
+            return this.menuItems;
         }
-        return newItems;
-    }
-
-    private processMenuTree(
-        menuTree: HashMap<string, Array<ContextMenuItem>>,
-        menuId: string,
-        menuItems: Array<ContextMenuItem>
-    ): void {
-        if (!menuItems) {
-            return;
+        if (!id.startsWith('0')) {
+            return undefined;
         }
-        menuTree.set(menuId, menuItems);
 
-        let index = 0;
-        for (const i in menuItems) {
-            const item = menuItems[i];
-            if (item && !item.isDivider()) {
-                if (item.children) {
-                    this.processMenuTree(menuTree, menuId + ',' + index, item.children);
+        const ids = id.split(',');
+        ids.shift();
+
+        let menuItems: Array<ContextMenuItem> = this.menuItems;
+        for (const index of ids) {
+            let offset = 0;
+            for (let item of menuItems) {
+                if (ContextMenuItem.isDivider(item)) {
+                    continue;
                 }
-                index++;
+                if (parseInt(index) === offset++) {
+                    const children = item?.children;
+                    if (children === undefined || children === null) {
+                        return undefined;
+                    }
+                    menuItems = children;
+                }
             }
         }
+        return menuItems;
     }
 
     /**
@@ -92,9 +87,8 @@ class ContextMenuPresenter {
             splits.pop();
         }
 
-        const menuStacks = ContextMenuViewGlobal.getMenuStacks();
         const newIds: Array<string> = newIdMap.keys();
-        const oldIds: Array<string> = menuStacks.keys();
+        const oldIds: Array<string> = this.menuStacks.keys();
 
         /*
          * 如果当前已存在菜单, id 相同的直接使用, 不同的清除
@@ -113,20 +107,19 @@ class ContextMenuPresenter {
     }
 
     private hideMenuStack(id: string): void {
-        const menuStacks = ContextMenuViewGlobal.getMenuStacks();
-        menuStacks.forEach((value, key) => {
+        this.menuStacks.forEach((value, key) => {
             if (key.indexOf(id) >= 0) {
                 value.hide();
-                menuStacks.delete(key);
+                this.menuStacks.delete(key);
             }
         });
     }
 
     private showMenuStack(ids: Array<string>): void {
         ids.sort();
-        Logger.debug('menu show stacks :', ids);
 
-        const menuStacks = ContextMenuViewGlobal.getMenuStacks();
+        Logger.debug('menu show stacks :', ids);
+        const menuStacks = this.menuStacks;
 
         for (const id of ids) {
             // 已经存在的, 不做处理
@@ -147,8 +140,9 @@ class ContextMenuPresenter {
             }
 
             // 生成新的
-            const menuItems = this.menuTree.get(id);
+            const menuItems = this.getMenuItemsById(id);
             if (!menuItems) {
+                Logger.debug('menu show stacks : no items ');
                 return;
             }
             const menuView: ContextMenuViewHolder = new ContextMenuViewHolder(id, menuItems, this.menuOptions);
@@ -162,9 +156,8 @@ class ContextMenuPresenter {
                     }
                 },
                 onClicked: (index: number, item: ContextMenuItem): void => {
-                    if (item.isEnabled() && item.onclick) {
-                        ContextMenu.hide();
-                        item.onclick(index, item);
+                    if (this.onItemClick) {
+                        this.onItemClick(index, item);
                     }
                 },
                 onRenderStart: (): void => {
@@ -177,44 +170,60 @@ class ContextMenuPresenter {
             menuView.rootView.oncontextmenu = (e: Event): void => {
                 Utils.preventEvent(e);
             };
-            menuView.rootView.onmouseenter = (e: Event): void => {
-                Utils.preventEvent(e);
+            menuView.rootView.onmouseenter = (): void => {
                 this.postSelection('i', id);
             };
-            menuView.rootView.onmouseleave = (e: Event): void => {
-                Utils.preventEvent(e);
+            menuView.rootView.onmouseleave = (): void => {
                 this.postSelection('o', '0');
             };
 
-            if (!hasParent) {
-                menuView.show(new Rect(this.menuPosition.x, this.menuPosition.y, 0, 0));
-            } else if (parentView === undefined) {
-                return;
-            } else {
-                const anchorRect = parentView.itemViewRects.get(parentIndex);
-                if (!anchorRect) {
-                    return;
-                }
+            const anchorRect =
+                parentView === undefined
+                    ? new Rect(this.menuPosition.x, this.menuPosition.y, 0, 0)
+                    : parentView.itemViewRects.get(parentIndex);
+            if (anchorRect && this.isAlive()) {
+                Logger.debug('menu show stack :', id);
                 menuView.show(anchorRect);
+                this.menuStacks.set(id, menuView);
             }
-
-            return;
         }
     }
 
     private postSelection(type: 'i' | 'o', id: string): void {
-        Logger.debug('menu post stacks : id =', id);
         if (type === 'i' && this.postSelectionType === type && this.postSelectionId.indexOf(id) >= 0) {
             // 优化鼠标事件的响应顺序, 父元素进入子元素时, 响应 id 最长的
             return;
         }
+        Logger.debug('menu post stacks : id =', id);
         clearTimeout(this.postSelectionTimerId);
 
         this.postSelectionType = type;
         this.postSelectionId = id;
         this.postSelectionTimerId = setTimeout(() => {
+            if (this.isDestroyed()) {
+                Logger.debug('menu is destroyed');
+                return;
+            }
             this.showMenu(id);
         }, 10);
+    }
+
+    private isAlive(): boolean {
+        return !this.isDestroyed();
+    }
+    private isDestroyed(): boolean {
+        return this.destroyed === true;
+    }
+
+    public postDestroy(): void {
+        this.destroyed = true;
+        clearTimeout(this.postSelectionTimerId);
+        this.hideMenu();
+        setTimeout(() => {
+            if (this.menuStacks.size() > 0) {
+                this.postDestroy();
+            }
+        }, 50);
     }
 }
 

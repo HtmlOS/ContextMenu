@@ -56,6 +56,8 @@ const menulist = [
     },
 ];
 
+menulist[0].children = menulist;
+
 ContextMenu.config({
     i18n: function (s) {
         return 'i18n(' + s + ')';

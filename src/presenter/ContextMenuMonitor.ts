@@ -5,25 +5,28 @@ import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
 import Utils from '../utils/Utils';
 import HashMap from '../model/HashMap';
-import {ContextMenuViewGlobal} from '../view/ContextMenuView';
-import Point from '../utils/Point';
 
 /**
  * window 事件监听
  * 示例: start(["keydown:27", "keydown:ctrl+27", "mousedown", "resize",...])
  */
 class EventListener {
-    static readonly listeners: HashMap<string, EventListenerOrEventListenerObject> = new HashMap();
-    static onevent: (event: string) => void;
+    readonly menu: ContextMenu;
+    readonly listeners: HashMap<string, EventListenerOrEventListenerObject> = new HashMap();
+    onevent: (event: string) => void;
 
-    static stop(): void {
+    constructor(menu: ContextMenu) {
+        this.menu = menu;
+    }
+
+    stop(): void {
         this.listeners.forEach((value, key) => {
             window.removeEventListener(key, value);
         });
         this.listeners.clear();
     }
 
-    static start(events: Array<string>): void {
+    start(events: Array<string>): void {
         for (const event of events) {
             if (event === undefined || event === null || event.trim().length === 0) {
                 Logger.debug('event not found');
@@ -38,8 +41,8 @@ class EventListener {
                 if (e instanceof MouseEvent) {
                     //  step1. 先判断鼠标是否还在菜单区域内
                     const point = Utils.getMouseEventPoint(e);
-                    const menuStacks = ContextMenuViewGlobal.getMenuStacks().values() || [];
-                    for (const view of menuStacks) {
+                    const menuStacks = this.menu?.presenter?.menuStacks || new HashMap();
+                    for (const view of menuStacks.values()) {
                         const rect: Rect = Utils.getBoundingClientRect(view.rootView);
                         if (point.x >= rect.l && point.x <= rect.r && point.y >= rect.t && point.y <= rect.b) {
                             // 鼠标还在根菜单区域内
@@ -98,7 +101,7 @@ class EventListener {
         }
     }
 
-    private static equalsKey(code: string, key: string): boolean {
+    private equalsKey(code: string, key: string): boolean {
         const fix = function (str: string): string {
             str = str.replace(/\s+/g, ''); // 去除所有空格
             str = str.replace(/\++/g, '+'); // 合并所有+号
@@ -121,7 +124,7 @@ class EventListener {
         Logger.debug('monitor event equals : ', code, key);
         return code === key;
     }
-    private static containsKey(codes: Array<string>, key: string): boolean {
+    private containsKey(codes: Array<string>, key: string): boolean {
         for (const item of codes) {
             if (this.equalsKey(item, key)) {
                 return true;
@@ -136,15 +139,20 @@ class EventListener {
  * 定时查询 target 的 rect 是否变化
  */
 class TargetRectListner {
-    static timer?: NodeJS.Timeout;
-    static stopped: boolean;
+    readonly menu: ContextMenu;
 
-    static targetPoint?: Point;
-    static targetRect?: Rect;
+    timer?: NodeJS.Timeout;
+    stopped: boolean;
 
-    static onchanged: (event: string) => void;
+    targetRect?: Rect;
 
-    public static stop(): void {
+    onchanged: (event: string) => void;
+
+    constructor(menu: ContextMenu) {
+        this.menu = menu;
+    }
+
+    public stop(): void {
         this.stopped = true;
         if (this.timer) {
             clearTimeout(this.timer);
@@ -152,28 +160,22 @@ class TargetRectListner {
         }
     }
 
-    public static start(): void {
+    public start(): void {
         this.stop();
 
         this.stopped = false;
         this.run();
     }
 
-    private static run(): void {
-        if (this.stopped === true) {
-            return;
-        }
+    private run(): void {
         this.timer = setTimeout(() => {
-            const event = ContextMenu.presenter?.event;
+            if (this.stopped === true) {
+                return;
+            }
+            const event = this.menu?.presenter?.event;
             const target = event?.target;
             if (event && target instanceof HTMLElement) {
                 const rect = Utils.getBoundingClientRect(target);
-                const point = Utils.getMouseEventPoint(event);
-                if (this.targetPoint !== undefined && !point.equals(this.targetPoint)) {
-                    return;
-                } else {
-                    this.targetRect = rect;
-                }
                 if (this.targetRect !== undefined && !rect.equals(this.targetRect)) {
                     this.hide();
                 } else {
@@ -184,7 +186,7 @@ class TargetRectListner {
         }, 100);
     }
 
-    private static hide(): void {
+    private hide(): void {
         this.targetRect = undefined;
         if (this.onchanged) {
             this.onchanged('other:target moved or resize');
@@ -195,31 +197,42 @@ class TargetRectListner {
  * auto hide monitor
  */
 class ContextMenuMonitor {
-    public static start(): void {
+    readonly targetRectListner: TargetRectListner;
+    readonly eventsListener: EventListener;
+    readonly events: Array<string>;
+    readonly menu: ContextMenu;
+
+    constructor(menu: ContextMenu) {
+        this.targetRectListner = new TargetRectListner(menu);
+        this.eventsListener = new EventListener(menu);
+        this.events = [
+            'keydown:27', // 按键:ESC
+            'mousedown', // 鼠标按下
+            'resize', // 窗口大小变化
+        ];
+        this.menu = menu;
+    }
+
+    public start(): void {
         Logger.debug('monitor start');
 
         const callback = (event: string): void => {
-            if (ContextMenu.presenter) {
-                ContextMenu.hide();
+            if (this.menu.presenter) {
+                this.menu.hide();
                 Logger.debug('monitor hidemenu by ', event);
             }
         };
 
-        TargetRectListner.onchanged = callback;
-        TargetRectListner.start();
+        this.targetRectListner.onchanged = callback;
+        this.targetRectListner.start();
 
-        EventListener.onevent = callback;
-        EventListener.start([
-            'keydown:27', // 按键:ESC
-            'mousedown', // 鼠标按下
-            'resize', // 窗口大小变化
-            // 'scroll', // 滚动
-        ]);
+        this.eventsListener.onevent = callback;
+        this.eventsListener.start(this.events);
     }
 
-    public static stop(): void {
-        TargetRectListner.stop();
-        EventListener.stop();
+    public stop(): void {
+        this.targetRectListner.stop();
+        this.eventsListener.stop();
         Logger.debug('monitor stop');
     }
 }

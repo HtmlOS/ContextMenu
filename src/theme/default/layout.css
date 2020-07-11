@@ -25,20 +25,9 @@
  * divier style
  *****************************************************************
  */
-.contextmenu > .contextmenu_divider {
-    /* 居中 */
-    -webkit-align-items: center;
-    -ms-flex-align: center;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    display: -webkit-flex;
-}
 
-.contextmenu > .contextmenu_divider > hr {
-    width: 96%;
+.contextmenu .contextmenu_divider hr {
     height: 1px;
-    margin: 2px;
 }
 
 /*
@@ -47,26 +36,20 @@
  *****************************************************************
  */
 
-.contextmenu > .contextmenu_item {
+.contextmenu .contextmenu_item {
     /* 居中 */
-    -webkit-align-items: center;
-    -ms-flex-align: center;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    display: -webkit-flex;
     padding: 3px;
 }
 
-.contextmenu > .contextmenu_item.contextmenu_item_selected {
+.contextmenu .contextmenu_item_selected {
     pointer-events: auto;
 }
 
-.contextmenu > .contextmenu_item.contextmenu_item_disabled {
+.contextmenu .contextmenu_item_disabled {
     pointer-events: none;
 }
 
-.contextmenu > .contextmenu_item > .contextmenu_item_icon {
+.contextmenu .contextmenu_item .contextmenu_item_icon {
     width: 20px;
     height: 20px;
     min-width: 20px;
@@ -74,7 +57,7 @@
     margin: 6px;
 }
 
-.contextmenu > .contextmenu_item > .contextmenu_item_text {
+.contextmenu .contextmenu_item .contextmenu_item_text {
     padding-left: 4px;
     padding-right: 16px;
     flex-grow: 1;
@@ -82,12 +65,12 @@
     white-space: nowrap;
 }
 
-.contextmenu > .contextmenu_item > .contextmenu_item_hotkey {
+.contextmenu .contextmenu_item .contextmenu_item_hotkey {
     word-break: keep-all;
     white-space: nowrap;
 }
 
-.contextmenu > .contextmenu_item > .contextmenu_item_arrow {
+.contextmenu .contextmenu_item .contextmenu_item_arrow {
     width: 16px;
     height: 16px;
     min-width: 16px;

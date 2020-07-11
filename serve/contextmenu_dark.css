@@ -1,30 +1,30 @@
-.dark > .contextmenu {
+.dark .contextmenu {
     background: dimgrey;
     stroke: white;
     border: 0 solid #999;
 }
 
-.dark > .contextmenu > .contextmenu_divider > hr {
+.dark .contextmenu .contextmenu_divider hr {
     background: rgba(196, 196, 196, 0.5);
 }
 
-.dark > .contextmenu > .contextmenu_item {
+.dark .contextmenu .contextmenu_item {
     color: rgba(240, 222, 222, 0.9);
 }
 
-.dark > .contextmenu > .contextmenu_item_selected {
+.dark .contextmenu .contextmenu_item_selected {
     background: rgb(156, 155, 155);
     color: rgba(148, 75, 75, 0.9);
 }
 
-.dark > .contextmenu > .contextmenu_item > .contextmenu_item_text {
+.dark .contextmenu .contextmenu_item .contextmenu_item_text {
     color: rgb(255, 255, 255);
 }
 
-.dark > .contextmenu > .contextmenu_item_selected > .contextmenu_item_text {
+.dark .contextmenu .contextmenu_item_selected .contextmenu_item_text {
     color: rgba(211, 1, 1, 0.9);
 }
 
-.dark > .contextmenu > .contextmenu_item > .contextmenu_item_hotkey {
+.dark .contextmenu .contextmenu_item .contextmenu_item_hotkey {
     color: rgb(235, 235, 235);
 }

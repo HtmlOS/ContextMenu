@@ -24,7 +24,7 @@
  *****************************************************************
  */
 
-.contextmenu > .contextmenu_divider > hr {
+.contextmenu .contextmenu_divider hr {
     border: none;
     background: rgba(196, 196, 196, 0.5);
 }
@@ -35,35 +35,34 @@
  *****************************************************************
  */
 
-.contextmenu > .contextmenu_item.contextmenu_item_selected {
+.contextmenu .contextmenu_item_selected {
     background: whitesmoke;
 }
 
-.contextmenu > .contextmenu_item.contextmenu_item_disabled {
+.contextmenu .contextmenu_item_disabled {
     -webkit-filter: grayscale(100%);
     -moz-filter: grayscale(100%);
     -ms-filter: grayscale(100%);
     -o-filter: grayscale(100%);
-    filter: grayscale(100%) alpha(opacity=60);
-    -moz-opacity: 0.6;
+    filter: grayscale(100%);
     opacity: 0.6;
 }
 
-.contextmenu > .contextmenu_item > .contextmenu_item_text {
+.contextmenu .contextmenu_item .contextmenu_item_text {
     font-size: 16px;
     color: rgba(0, 0, 0, 0.9);
 }
 
-.contextmenu > .contextmenu_item > .contextmenu_item_hotkey {
+.contextmenu .contextmenu_item .contextmenu_item_hotkey {
     font-size: 12px;
     color: #aaa;
 }
 
-.contextmenu > .contextmenu_item > .contextmenu_item_icon {
+.contextmenu .contextmenu_item .contextmenu_item_icon {
     border-radius: 2px;
 }
 
-.contextmenu > .contextmenu_item > .contextmenu_item_arrow {
+.contextmenu .contextmenu_item .contextmenu_item_arrow {
     filter: alpha(opacity=50);
     -moz-opacity: 0.5;
     opacity: 0.5;
