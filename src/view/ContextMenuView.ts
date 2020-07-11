@@ -202,7 +202,8 @@ class ContextMenuViewHolder {
         const showArrow: boolean = ContextMenuItem.hasArrow(item);
         const showHotkey: boolean = item.hotkey !== undefined && item.hotkey.length > 0;
 
-        const itemIcon: string | undefined = item.icon;
+        const itemIcon: string =
+            item.icon || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
         const itemName: string =
             this.options && this.options.i18n ? this.options.i18n(item.name || '') || item.name || '' : item.name || '';
         const itemHotkey: string = item.hotkey || '';
@@ -212,20 +213,22 @@ class ContextMenuViewHolder {
         } else {
             itemView.innerHTML = `
                 <td>
-                    <img class="${CONTEXTMENU_STYLE_ITEM_ICON}" src="${itemIcon}" style="display:${
-                itemIcon ? 'block' : 'none'
-            }" draggable="false" />
+                    <img class="${CONTEXTMENU_STYLE_ITEM_ICON}" src="${itemIcon}" draggable="false"/>
                 </td>
                 <td>
                     <div class="${CONTEXTMENU_STYLE_ITEM_TEXT}">${itemName}</div>
                 </td>
                 <td>
-                    <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}" style="display:${
-                showHotkey ? 'block' : 'none'
-            }">${itemHotkey}</div>
+                    <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}"
+                         style="display:${showHotkey ? 'block' : 'none'}">
+                        ${itemHotkey}
+                    </div>
                 </td>
                 <td>
-                    <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}" style="display:${showArrow ? 'block' : 'none'}"/>
+                    <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
+                         style="display:${showArrow ? 'block' : 'none'}"></div>
+                    <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
+                         style="display:${!showArrow ? 'block' : 'none'}; visibility: hidden"></div>
                 </td>
             `;
         }

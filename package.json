@@ -7,7 +7,7 @@
   "module": "dist/contextmenu.esm.js",
   "browser": "dist/contextmenu.js",
   "style": "dist/contextmenu.css",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "scripts": {
     "prettier": "prettier --write **/*.{js,ts,css}",
     "lint-code": "eslint --fix **/*.{js,ts}",
