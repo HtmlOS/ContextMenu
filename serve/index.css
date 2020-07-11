@@ -3,6 +3,8 @@
 
 html,
 body {
+    width: 100%;
+    height: 100%;
     margin: 0;
     padding: 0;
 }
@@ -15,25 +17,12 @@ body {
 }
 
 .root {
-    width: 90vw;
-    height: 90vh;
-    max-width: 120vw;
-    max-height: 120vh;
-    padding: 32px;
-}
-
-.menu-demo {
-    width: 75vw;
-    height: 50vh;
-    stroke-width: 2px;
-    stroke: black;
-    background: whitesmoke;
-    padding: 16px;
-}
-
-.menu-click-area {
     width: 100%;
     height: 100%;
+    background: whitesmoke;
+}
+
+.gravity_center {
     display: flex;
     align-items: center;
     align-content: center;

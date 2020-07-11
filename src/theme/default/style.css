@@ -35,11 +35,11 @@
  *****************************************************************
  */
 
-.contextmenu .contextmenu_item_selected {
+.contextmenu .contextmenu_item.contextmenu_item_selected {
     background: whitesmoke;
 }
 
-.contextmenu .contextmenu_item_disabled {
+.contextmenu .contextmenu_item.contextmenu_item_disabled {
     -webkit-filter: grayscale(100%);
     -moz-filter: grayscale(100%);
     -ms-filter: grayscale(100%);
@@ -56,10 +56,6 @@
 .contextmenu .contextmenu_item .contextmenu_item_hotkey {
     font-size: 12px;
     color: #aaa;
-}
-
-.contextmenu .contextmenu_item .contextmenu_item_icon {
-    border-radius: 2px;
 }
 
 .contextmenu .contextmenu_item .contextmenu_item_arrow {

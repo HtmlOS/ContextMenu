@@ -8,7 +8,7 @@
     background: rgba(196, 196, 196, 0.5);
 }
 
-.light .contextmenu .contextmenu_item_selected {
+.light .contextmenu .contextmenu_item.contextmenu_item_selected {
     background: lightblue;
 }
 

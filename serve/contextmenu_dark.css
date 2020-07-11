@@ -12,7 +12,7 @@
     color: rgba(240, 222, 222, 0.9);
 }
 
-.dark .contextmenu .contextmenu_item_selected {
+.dark .contextmenu .contextmenu_item.contextmenu_item_selected {
     background: rgb(156, 155, 155);
     color: rgba(148, 75, 75, 0.9);
 }

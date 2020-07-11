@@ -177,6 +177,8 @@ class ContextMenuViewHolder {
         menuView.setAttribute('cellspacing', '0');
         menuView.setAttribute('cellpadding', '0');
 
+        menuView.style.margin = '0px';
+
         menuView.style.position = 'fixed'; // 生成绝对定位的元素，相对于浏览器窗口进行定位。
         menuView.style.width = 'auto';
         menuView.style.height = 'auto';
@@ -200,8 +202,7 @@ class ContextMenuViewHolder {
         const showArrow: boolean = ContextMenuItem.hasArrow(item);
         const showHotkey: boolean = item.hotkey !== undefined && item.hotkey.length > 0;
 
-        const itemIcon: string =
-            item.icon || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        const itemIcon: string | undefined = item.icon;
         const itemName: string =
             this.options && this.options.i18n ? this.options.i18n(item.name || '') || item.name || '' : item.name || '';
         const itemHotkey: string = item.hotkey || '';
@@ -211,21 +212,20 @@ class ContextMenuViewHolder {
         } else {
             itemView.innerHTML = `
                 <td>
-                    <img class="${CONTEXTMENU_STYLE_ITEM_ICON}" src="${itemIcon}" draggable="false" />
+                    <img class="${CONTEXTMENU_STYLE_ITEM_ICON}" src="${itemIcon}" style="display:${
+                itemIcon ? 'block' : 'none'
+            }" draggable="false" />
                 </td>
                 <td>
                     <div class="${CONTEXTMENU_STYLE_ITEM_TEXT}">${itemName}</div>
                 </td>
                 <td>
-                    <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}" 
-                        style="display:${showHotkey ? 'block' : 'none'}">
-                        ${itemHotkey}
-                    </div>
+                    <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}" style="display:${
+                showHotkey ? 'block' : 'none'
+            }">${itemHotkey}</div>
                 </td>
                 <td>
-                    <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
-                        style="display:${showArrow ? 'block' : 'none'}">
-                    </div>
+                    <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}" style="display:${showArrow ? 'block' : 'none'}"/>
                 </td>
             `;
         }
@@ -246,17 +246,14 @@ class ContextMenuViewHolder {
     }
 
     private computeItemRects(): void {
-        const mL = this.rootViewRect.l;
-        const mW = this.rootViewRect.w;
-
         let index = 0;
         Utils.visitElemementChildren(this.rootView, (i, element) => {
             const elementRect = Utils.getBoundingClientRect(element);
             const item = this.items[i];
             if (!ContextMenuItem.isDivider(item)) {
-                const l = mL;
+                const l = elementRect.l;
                 const t = elementRect.t;
-                const w = mW;
+                const w = elementRect.w;
                 const h = elementRect.h;
                 this.itemViewRects.set(index++, new Rect(l, t, w, h));
             }

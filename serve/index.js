@@ -61,14 +61,29 @@ ContextMenu.config({
     },
 });
 
+function hasClass(ele, cls) {
+    return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+}
+//为指定的dom元素添加样式
+function addClass(ele, cls) {
+    if (!hasClass(ele, cls)) ele.className += ' ' + cls;
+}
+//删除指定dom元素的样式
+function removeClass(ele, cls) {
+    if (hasClass(ele, cls)) {
+        var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)'); //正则表达式，需要补血
+        ele.className = ele.className.replace(reg, ' ');
+    }
+}
+
 const body = document.getElementsByTagName('body')[0];
-const div = document.getElementsByClassName('menu-demo')[0];
-div.oncontextmenu = function (e) {
+body.oncontextmenu = function (e) {
     const radios = document.getElementsByName('theme');
     for (let i in radios) {
         let radio = radios[i];
+        removeClass(body, radio.value);
         if (radio.checked) {
-            body.className = radio.value;
+            addClass(body, radio.value);
         }
     }
     ContextMenu.show(menulist);
