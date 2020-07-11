@@ -17,11 +17,7 @@ class ContextMenuOptions {
 class ContextMenu {
     options?: ContextMenuOptions;
     presenter?: ContextMenuPresenter;
-    readonly monitor: ContextMenuMonitor;
-
-    constructor() {
-        this.monitor = new ContextMenuMonitor(this);
-    }
+    monitor?: ContextMenuMonitor;
 
     config(globalOptions?: ContextMenuOptions): void {
         this.options = globalOptions;
@@ -32,13 +28,13 @@ class ContextMenu {
     }
 
     hide(): void {
+        if (this.monitor) {
+            this.monitor.stop();
+        }
         if (this.presenter != undefined) {
             Logger.debug('hide menu');
             this.presenter.postDestroy();
             this.presenter = undefined;
-        }
-        if (this.monitor) {
-            this.monitor.stop();
         }
     }
 
@@ -66,9 +62,8 @@ class ContextMenu {
             }
         };
         this.presenter.showMenu();
-        if (this.monitor) {
-            this.monitor.start();
-        }
+        this.monitor = new ContextMenuMonitor(this);
+        this.monitor.start();
     }
 }
 

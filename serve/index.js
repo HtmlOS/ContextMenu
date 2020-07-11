@@ -2,14 +2,16 @@
 
 ContextMenu.debug(true);
 
+const toast = function (index, item) {
+    alert(index + ' => ' + JSON.stringify(item, null, 2));
+};
+
 // const menulist = [{name: 'cut'}];
 const menulist = [
     {
         name: '刷新',
         icon: './icon/refresh.png',
-        onclick: function (index, item) {
-            window.location.reload();
-        },
+        onclick: toast,
     },
     {
         name: '####(^_^)####',
@@ -21,14 +23,13 @@ const menulist = [
         name: 'copy',
         icon: './icon/copy.png',
         hotkey: 'ctrl+c',
-        onclick: function (index, item) {
-            alert(index + ' => ' + JSON.stringify(item, null, 2));
-        },
+        onclick: toast,
     },
     {
         name: 'paste',
         icon: './icon/paste.png',
         hotkey: 'ctrl+v',
+        onclick: toast,
     },
     {},
     {
@@ -37,15 +38,11 @@ const menulist = [
         children: [
             {
                 name: '文件',
-                onclick: function (index, item) {
-                    alert(index + ' => ' + JSON.stringify(item, null, 2));
-                },
+                onclick: toast,
             },
             {
                 name: '文件夹',
-                onclick: function (index, item) {
-                    alert(index + ' => ' + JSON.stringify(item, null, 2));
-                },
+                onclick: toast,
             },
         ],
     },
