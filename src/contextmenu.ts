@@ -34,3 +34,4 @@ if (window) {
 }
 
 export {ContextMenuManager as ContextMenu, ContextMenuOptions};
+export default ContextMenuManager as ContextMenu;
