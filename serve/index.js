@@ -9,7 +9,7 @@ const toast = function (index, item) {
 // const menulist = [{name: 'cut'}];
 const menulist = [
     {
-        name: '刷新',
+        name: 'reload',
         icon: './icon/refresh.png',
         onclick: function (index, item) {
             window.location.reload();
@@ -35,33 +35,35 @@ const menulist = [
     },
     {},
     {
-        name: '新建',
+        name: 'new',
         hotkey: '',
         children: [
             {
-                name: '文件',
+                name: 'file',
                 onclick: toast,
             },
             {
-                name: '文件夹',
+                name: 'folder',
                 onclick: toast,
             },
         ],
     },
     {},
     {
-        name: '关于',
+        name: 'about',
         icon: './icon/about.png',
     },
 ];
 
-menulist[0].children = menulist;
+const lang_zh = {
+    reload: '刷新',
+    copy: '复制',
+    paste: '粘贴',
+    about: '关于',
+    new: '新建',
+};
 
-ContextMenu.config({
-    i18n: function (s) {
-        return 'i18n(' + s + ')';
-    },
-});
+menulist[0].children = menulist;
 
 function hasClass(ele, cls) {
     return ele.className.match('(\\s|^)' + cls + '(\\s|$)');
@@ -84,6 +86,14 @@ const radios = [
     document.getElementById('radio_light'),
     document.getElementById('radio_dark'),
 ];
+const radio_zh = document.getElementById('radio_zh');
+
+ContextMenu.config({
+    i18n: function (s) {
+        return radio_zh.checked ? lang_zh[s] : s;
+    },
+});
+
 body.oncontextmenu = function (e) {
     for (let i in radios) {
         const radio = radios[i];
