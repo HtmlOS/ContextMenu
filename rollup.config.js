@@ -66,7 +66,7 @@ const banner = `/*!
  */
  `;
 export default {
-    input: './src/index.ts',
+    input: `./src/${pkg.title}.ts`,
     plugins: [
         isDev &&
             serve({
