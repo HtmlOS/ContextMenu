@@ -38,7 +38,7 @@ yarn add contextmenu.ts
 
 - 导入
 ```js
-import ContextMenu from "@htmlos/contextmenu";
+import {ContextMenu, ContextMenuOptions} from "@htmlos/contextmenu";
 import "@htmlos/contextmenu/dist/contextmenu.css";
 ```
 
