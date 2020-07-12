@@ -7,13 +7,15 @@
 .contextmenu {
     overflow: auto;
 
-    /* moz-user-select: -moz-none; */
+    /* non select */
     -moz-user-select: none;
     -o-user-select: none;
     -khtml-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
+
+    /* padding */
     padding-top: 2px;
     padding-bottom: 2px;
     padding-left: 1px;
@@ -67,6 +69,7 @@
 
 .contextmenu .contextmenu_item .contextmenu_item_text {
     flex-grow: 1;
+    text-align: left;
     word-break: keep-all;
     white-space: nowrap;
     padding: 4px;
