@@ -61,6 +61,8 @@ const lang_zh = {
     paste: '粘贴',
     about: '关于',
     new: '新建',
+    file: '文件',
+    folder: '文件夹',
 };
 
 menulist[0].children = menulist;
