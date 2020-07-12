@@ -11,7 +11,9 @@ const menulist = [
     {
         name: '刷新',
         icon: './icon/refresh.png',
-        onclick: toast,
+        onclick: function (index, item) {
+            window.location.reload();
+        },
     },
     {
         name: '####(^_^)####',
@@ -62,7 +64,7 @@ ContextMenu.config({
 });
 
 function hasClass(ele, cls) {
-    return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
+    return ele.className.match('(\\s|^)' + cls + '(\\s|$)');
 }
 //为指定的dom元素添加样式
 function addClass(ele, cls) {
@@ -71,16 +73,20 @@ function addClass(ele, cls) {
 //删除指定dom元素的样式
 function removeClass(ele, cls) {
     if (hasClass(ele, cls)) {
-        var reg = new RegExp('(\\s|^)' + cls + '(\\s|$)'); //正则表达式，需要补血
-        ele.className = ele.className.replace(reg, ' ');
+        ele.className = ele.className.replace('(\\s|^)' + cls + '(\\s|$)', ' ');
     }
 }
 
 const body = document.getElementsByTagName('body')[0];
+const terminal = document.getElementById('terminal');
+const radios = [
+    document.getElementById('radio_default'),
+    document.getElementById('radio_light'),
+    document.getElementById('radio_dark'),
+];
 body.oncontextmenu = function (e) {
-    const radios = document.getElementsByName('theme');
     for (let i in radios) {
-        let radio = radios[i];
+        const radio = radios[i];
         removeClass(body, radio.value);
         if (radio.checked) {
             addClass(body, radio.value);

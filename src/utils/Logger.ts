@@ -1,23 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use strict';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Logger: any = {};
 
 Logger.debuggable = false;
-Logger.error = console.error;
 
-Object.defineProperty(Logger, 'debug', {
-    get() {
-        return Logger.debuggable
-            ? console.debug
-            : (): void => {
-                  //
-              };
-    },
-    set() {
-        //
-    },
-    configurable: false,
-});
-
+Logger.error = function (message?: any, ...args: any[]): void {
+    console.error.apply(console, [message, args]);
+};
+Logger.debug = function (message?: any, ...args: any[]): void {
+    console.log.apply(console, [message, args]);
+};
 export default Logger;

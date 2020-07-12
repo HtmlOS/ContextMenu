@@ -356,7 +356,7 @@ class ContextMenuViewHolder {
                 break;
             case 'top':
                 preH = Math.min(mH, sH);
-                preY = sT + preH;
+                preY = sT;
                 break;
             case 'bottom':
                 preH = Math.min(mH, sH);

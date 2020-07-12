@@ -177,7 +177,6 @@ class TargetRectListner {
             if (event && target instanceof HTMLElement) {
                 const rect = Utils.getBoundingClientRect(target);
                 if (this.targetRect !== undefined && !rect.equals(this.targetRect)) {
-                    Logger.error('menu listener', this.targetRect, rect);
                     this.hide();
                 } else {
                     this.targetRect = rect;
@@ -219,8 +218,8 @@ class ContextMenuMonitor {
 
         const callback = (event: string): void => {
             if (this.menu.presenter) {
-                this.menu.hide();
                 Logger.debug('monitor hidemenu by ', event);
+                this.menu.hide();
             }
         };
 

@@ -36,7 +36,7 @@ class ContextMenuPresenter {
         if (!id || id === '0') {
             return this.menuItems;
         }
-        if (!id.startsWith('0')) {
+        if (id.indexOf('0') !== 0) {
             return undefined;
         }
 
