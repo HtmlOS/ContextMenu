@@ -1,12 +1,12 @@
-# Html ContextMenu
+# Html5 ContextMenu
 
-> A simple and easy-to-use contextmenu library for html
+> A simple and easy-to-use contextmenu library for html5
 
 [![npm](https://badgen.net/npm/v/@htmlos/contextmenu)](https://npm.im/@htmlos/contextmenu)
 
 ### Features
 
-- [X] Supports  `html`, `vue`, `react` and other frameworks
+- [X] Supports  `html5`, `vue`, `react` and other frameworks
 - [X] Support infinite submenu
 - [X] Support menu item click event callback
 - [X] Support menu item disabled
@@ -17,18 +17,19 @@
 - [X] Support custom css style
 
 ![](./capture/capture1.png)
+![](./capture/capture2.png)
 
-### 兼容性
+### Browser Compatibility
 
 
 | Browser  | Chrome | FireFox | IE | Safari |
-|  ---- | ------ | ------- | --- | ----- |
-|  Version  |    ?   |    ?    |  9+ |  11+  |
+|  ------- | ------ | ------- | --- | ----- |
+|  Version  |    *   |    *    |  9+ |  11+  |
 
 
 ### Usage
 
-- Installation
+- Install
 
 ```shell
 # npm
@@ -50,7 +51,7 @@ import "@htmlos/contextmenu/dist/contextmenu.css";
     - Do not use animations that affect the size. If used, it may cause typographical disturbances, because the menu is already fixed size after being visible
     - Other attributes please test by yourself
 
-- Options: 
+- Config: 
 
 ```js
 // ContextMenu.config(options: CotextMenuOptions);
@@ -61,7 +62,7 @@ ContextMenu.config({
 });
 ```
 
-- Show menu
+- Show
   
 ```js
 const menu=[
@@ -84,9 +85,10 @@ menu[0].children=menu; // nested infinite submenu
 Contextmenu.show(menu);
 ```
 
-- Hide menu
-  
+- Hide
+
 ```js
+// auto hide or manually
 Contextmenu.hide();
 ```
 
