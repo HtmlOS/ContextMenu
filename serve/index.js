@@ -2,12 +2,12 @@
 
 ContextMenu.debug(true);
 
-const toast = function (index, item) {
+var toast = function (index, item) {
     alert(index + ' => ' + JSON.stringify(item, null, 2));
 };
 
 // const menulist = [{name: 'cut'}];
-const menulist = [
+var menulist = [
     {
         name: 'reload',
         icon: './icon/refresh.png',
@@ -55,7 +55,7 @@ const menulist = [
     },
 ];
 
-const lang_zh = {
+var lang_zh = {
     reload: '刷新',
     copy: '复制',
     paste: '粘贴',
@@ -81,14 +81,14 @@ function removeClass(ele, cls) {
     }
 }
 
-const body = document.getElementsByTagName('body')[0];
-const terminal = document.getElementById('terminal');
-const radios = [
+var body = document.getElementsByTagName('body')[0];
+var terminal = document.getElementById('terminal');
+var radios = [
     document.getElementById('radio_default'),
     document.getElementById('radio_light'),
     document.getElementById('radio_dark'),
 ];
-const radio_zh = document.getElementById('radio_zh');
+var radio_zh = document.getElementById('radio_zh');
 
 ContextMenu.config({
     i18n: function (s) {
@@ -97,8 +97,8 @@ ContextMenu.config({
 });
 
 body.oncontextmenu = function (e) {
-    for (let i in radios) {
-        const radio = radios[i];
+    for (var i in radios) {
+        var radio = radios[i];
         removeClass(body, radio.value);
         if (radio.checked) {
             addClass(body, radio.value);

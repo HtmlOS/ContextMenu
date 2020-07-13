@@ -13,7 +13,7 @@ class HashMap<K, V> {
         for (const i in this._keys) {
             const item = this._keys[i];
             if (item === key) {
-                return parseInt(i);
+                return parseInt(i, 10);
             }
         }
         return -1;

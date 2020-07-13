@@ -7,7 +7,7 @@
   "module": "dist/contextmenu.esm.js",
   "browser": "dist/contextmenu.js",
   "style": "dist/contextmenu.css",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "scripts": {
     "prettier": "prettier --write **/*.{js,ts,css}",
     "lint-code": "eslint --fix **/*.{js,ts}",
@@ -18,8 +18,8 @@
     "undeploy": "npm unpublish @htmlos/contextmenu --force"
   },
   "keywords": [
-    "menu",
     "contextmenu",
+    "menu",
     "os",
     "web",
     "html",

@@ -1,33 +1,34 @@
-# Html5 ContextMenu
+# Html ContextMenu
 
-> 一款简单好用的浏览器右键菜单库
+> A simple and easy-to-use contextmenu library for html
 
 [![npm](https://badgen.net/npm/v/@htmlos/contextmenu)](https://npm.im/@htmlos/contextmenu)
 
-### 功能介绍
+### Features
 
-- [X] 简单易用, 支持html5, vue, react, 等
-- [X] 支持无限多级子菜单
-- [X] 支持点击事件回调
-- [X] 支持菜单选项禁用
-- [X] 支持菜单选项图标
-- [X] 支持快捷方式描述
-- [X] 支持自动适应浏览器弹出位置(保持菜单全部可见在浏览器可见区域内)
-- [X] 支持自动隐藏(点击菜单外部区域/调整浏览器窗口大小时/滚动页面/按下esc时)
-- [X] 支持自定义css样式
+- [X] Supports  `html`, `vue`, `react` and other frameworks
+- [X] Support infinite submenu
+- [X] Support menu item click event callback
+- [X] Support menu item disabled
+- [X] Support menu item icon
+- [X] Support hotkey description
+- [X] Support automatic adaptation to browser pop-up position (keep all menus visible in browser visible area)
+- [X] Support auto hide (when clicking outside area of ​​menu/adjusting browser window size/scrolling page/pressing `ESC`)
+- [X] Support custom css style
 
 ![](./capture/capture1.png)
+
 ### 兼容性
 
 
-| 浏览器| Chrome | FireFox | IE | Safari |
+| Browser  | Chrome | FireFox | IE | Safari |
 |  ---- | ------ | ------- | --- | ----- |
-|  版本  |    ?   |    ?    |  9+ |  11+  |
+|  Version  |    ?   |    ?    |  9+ |  11+  |
 
 
-### 使用
+### Usage
 
-- 安装
+- Installation
 
 ```shell
 # npm
@@ -36,21 +37,21 @@ npm i contextmenu.ts
 yarn add contextmenu.ts
 ```
 
-- 导入
+- Import
 ```js
 import {ContextMenu, ContextMenuOptions} from "@htmlos/contextmenu";
 import "@htmlos/contextmenu/dist/contextmenu.css";
 ```
 
-- 自定义样式: 请参考 `contextmenu.css`
-  - 限制
-    - 内部使用`position:fixed`排版, 这会导致一些元素的某些样式会失效(如`.contextmenu`和`.contextmenu_item`的`margin`, 需要使用`padding`调整)
-    - `.contextmenu`不要使用`transition`动画属性, 这不仅可能会在加载过程看不到, 还会影响后续自动定位, 
-    - `.contextmenu_item`不要使用会影响尺寸的动画, 如果使用了可能会引起排版紊乱, 因为菜单可见后已经的固定大小的了
-    - 其他动画属性请自测
+- Custom style: please refer to `contextmenu.css`
+  - Restrictions
+    - Internally use `position: fixed`, which will cause some styles of some elements to be invalid (such as `.contextmenu` and `.contextmenu_item` of `margin`, need to use `padding` adjustment)
+    - Don't use `transition` animation attribute for `.contextmenu`, this may not only be invisible during the loading process, but also affect the subsequent automatic positioning,
+    - Do not use animations that affect the size. If used, it may cause typographical disturbances, because the menu is already fixed size after being visible
+    - Other attributes please test by yourself
 
-- 配置: ``
-  - i18n: (s)=>{ return translate(s); }
+- Options: 
+
 ```js
 // ContextMenu.config(options: CotextMenuOptions);
 ContextMenu.config({
@@ -60,11 +61,11 @@ ContextMenu.config({
 });
 ```
 
-- 显示菜单
+- Show menu
   
 ```js
 const menu=[
-  { // 选项
+  { // item
     name: "reload",
     icon: "./reload.png",
     disabled: false,
@@ -74,32 +75,19 @@ const menu=[
       //...
     ]
   },
-  {}, // 分割线
+  {}, // divider
   //...
 ]
 
-menu[0].children=menu; // 无限子菜单
+menu[0].children=menu; // nested infinite submenu
 
-Contextmenu.show(menu); //显示
+Contextmenu.show(menu);
 ```
 
-- 隐藏菜单
+- Hide menu
   
 ```js
-Contextmenu.hide(); //隐藏
-```
-
-### 构建
-- 调试
-
-```shell
-yarn serve
-```
-
-- 构建
-
-```shell
-yarn build
+Contextmenu.hide();
 ```
 
 ### License

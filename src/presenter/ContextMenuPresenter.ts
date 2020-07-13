@@ -7,11 +7,12 @@ import {ContextMenuOptions} from '../model/ContextMenu';
 import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
 import Utils from '../utils/Utils';
-import HashMap from '../model/HashMap';
+import HashMap from '../model/compatible/CMap';
+import CEvent from '../model/compatible/CEvent';
 
 class ContextMenuPresenter {
     readonly id: string = new Date().toUTCString();
-    readonly event: MouseEvent;
+    readonly event: CEvent;
     readonly menuItems: Array<ContextMenuItem>;
     readonly menuOptions: ContextMenuOptions;
     readonly menuPosition: Point;
@@ -25,10 +26,10 @@ class ContextMenuPresenter {
 
     destroyed: boolean;
 
-    constructor(e: MouseEvent, menuItems: Array<ContextMenuItem>, options?: ContextMenuOptions) {
+    constructor(e: CEvent, menuItems: Array<ContextMenuItem>, options?: ContextMenuOptions) {
         this.event = e;
         this.menuItems = menuItems;
-        this.menuPosition = Utils.getMouseEventPoint(e);
+        this.menuPosition = e.getPoint();
         this.menuOptions = options || new ContextMenuOptions();
     }
 
@@ -50,7 +51,7 @@ class ContextMenuPresenter {
                 if (ContextMenuItem.isDivider(item)) {
                     continue;
                 }
-                if (parseInt(index) === offset++) {
+                if (parseInt(index, 10) === offset++) {
                     const children = item?.children;
                     if (children === undefined || children === null) {
                         return undefined;
@@ -125,7 +126,7 @@ class ContextMenuPresenter {
             // 已经存在的, 不做处理
 
             const hasParent = id.indexOf(',') >= 0;
-            const parentIndex = parseInt(!hasParent ? id : id.substr(id.lastIndexOf(',') + 1));
+            const parentIndex = parseInt(!hasParent ? id : id.substr(id.lastIndexOf(',') + 1), 10);
             const parentId = !hasParent ? undefined : id.substr(0, id.lastIndexOf(','));
             const parentView = parentId === undefined ? undefined : menuStacks.get(parentId);
 

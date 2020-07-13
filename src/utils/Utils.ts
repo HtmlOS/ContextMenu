@@ -1,12 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 'use strict';
 
 import Point from './Point';
 import Rect from './Rect';
+import CHTMLElement from '../model/compatible/CHTMLElement';
 
 class Utils {
     public static preventEvent(e: Event): void {
-        e.preventDefault();
-        e.stopPropagation();
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
         e.cancelBubble = true;
         e.returnValue = false;
     }
@@ -66,41 +73,17 @@ class Utils {
         return new Rect(padding, padding, winWidth - padding * 2, winHeight - padding * 2);
     }
 
-    public static getBoundingClientRect(element: Element): Rect {
-        const dom = element.getBoundingClientRect();
-        const top = dom.top - document.documentElement.clientTop;
-        const left = dom.left - document.documentElement.clientLeft;
-        return new Rect(left, top, dom.right - left, dom.bottom - top);
-    }
     public static visitElemementChildren(
         element: HTMLElement,
-        callback: (index: number, child: HTMLElement) => void
+        callback: (index: number, child: CHTMLElement) => void
     ): void {
         let child = element.firstChild;
         let index = 0;
         while (child !== undefined && child !== null) {
-            if (child.nodeType === 1 && child instanceof HTMLElement) {
-                callback(index++, child);
+            if (child.nodeType === 1) {
+                callback(index++, new CHTMLElement(child));
             }
             child = child.nextSibling;
-        }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-    public static assignObject(target: any, ...srcs: any[]): void {
-        if (target === undefined || target === null) {
-            return;
-        }
-
-        for (const source of srcs) {
-            if (source === undefined || source === null) {
-                continue;
-            }
-            for (const key in source) {
-                if (Object.prototype.hasOwnProperty.call(source, key)) {
-                    target[key] = source[key];
-                }
-            }
         }
     }
 }

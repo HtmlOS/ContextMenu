@@ -16,7 +16,8 @@ import ContextMenuItem from '../model/ContextMenuItem';
 import Rect from '../utils/Rect';
 import Utils from '../utils/Utils';
 import Logger from '../utils/Logger';
-import HashMap from '../model/HashMap';
+import HashMap from '../model/compatible/CMap';
+import CHTMLElement from '../model/compatible/CHTMLElement';
 
 interface OnStateChangedListening {
     onSelected(index: number): void;
@@ -139,20 +140,20 @@ class ContextMenuViewHolder {
     }
 
     private updateStateChangedListener(): void {
-        this.visitItems((index, itemView, item) => {
+        this.visitItems((index, view, item) => {
             if (this.onStateChangedListener !== undefined) {
-                itemView.onmouseover = ((index: number, hook: (index: number) => void) => {
+                view.element.onmouseover = ((index: number, hook: (index: number) => void) => {
                     return (): void => {
                         hook(index);
                     };
                 })(index, this.onStateChangedListener.onSelected);
-                itemView.onmouseleave = ((index: number, hook: (index: number) => void) => {
+                view.element.onmouseleave = ((index: number, hook: (index: number) => void) => {
                     return (): void => {
                         hook(-1);
                     };
                 })(index, this.onStateChangedListener.onSelected);
 
-                itemView.onclick = ((
+                view.element.onclick = ((
                     index: number,
                     item: ContextMenuItem,
                     hook: (index: number, item: ContextMenuItem) => void
@@ -176,18 +177,19 @@ class ContextMenuViewHolder {
         menuView.setAttribute('border', '0');
         menuView.setAttribute('cellspacing', '0');
         menuView.setAttribute('cellpadding', '0');
-
         menuView.style.margin = '0px';
 
         menuView.style.position = 'fixed'; // 生成绝对定位的元素，相对于浏览器窗口进行定位。
         menuView.style.width = 'auto';
         menuView.style.height = 'auto';
-        menuView.style.zIndex = '999999999';
+        menuView.style.zIndex = '2147483647';
         menuView.style.top = 0 + 'px';
         menuView.style.left = 0 + 'px';
+
         for (const i in this.items) {
             const item: ContextMenuItem = this.items[i];
             const itemView = this.generateItemView(item);
+            this.updateItemViewClass(item, new CHTMLElement(itemView), false);
             menuView.appendChild(itemView);
         }
 
@@ -196,8 +198,6 @@ class ContextMenuViewHolder {
 
     private generateItemView(item: ContextMenuItem): HTMLElement {
         const itemView: HTMLElement = document.createElement('tr');
-
-        this.updateItemViewClass(item, itemView, false);
 
         const showArrow: boolean = ContextMenuItem.hasArrow(item);
         const showHotkey: boolean = item.hotkey !== undefined && item.hotkey.length > 0;
@@ -209,49 +209,62 @@ class ContextMenuViewHolder {
         const itemHotkey: string = item.hotkey || '';
 
         if (ContextMenuItem.isDivider(item)) {
-            itemView.innerHTML = `<th align="center" colspan="4"><hr/></th>`;
+            const th: HTMLElement = document.createElement('th');
+            th.setAttribute('align', 'center');
+            th.setAttribute('colspan', '4');
+            th.appendChild(document.createElement('hr'));
+            itemView.appendChild(th);
         } else {
-            itemView.innerHTML = `
-                <td>
-                    <img class="${CONTEXTMENU_STYLE_ITEM_ICON}" src="${itemIcon}" draggable="false"/>
-                </td>
-                <td>
-                    <div class="${CONTEXTMENU_STYLE_ITEM_TEXT}">${itemName}</div>
-                </td>
-                <td>
-                    <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}"
-                         style="display:${showHotkey ? 'block' : 'none'}">
-                        ${itemHotkey}
-                    </div>
-                </td>
-                <td>
-                    <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
-                         style="display:${showArrow ? 'block' : 'none'}"></div>
-                    <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
-                         style="display:${!showArrow ? 'block' : 'none'}; visibility: hidden"></div>
-                </td>
+            const tdIcon: HTMLElement = document.createElement('td');
+            const tdText: HTMLElement = document.createElement('td');
+            const tdHotkey: HTMLElement = document.createElement('td');
+            const tdArrow: HTMLElement = document.createElement('td');
+            itemView.appendChild(tdIcon);
+            itemView.appendChild(tdText);
+            itemView.appendChild(tdHotkey);
+            itemView.appendChild(tdArrow);
+
+            tdIcon.innerHTML = `
+                <img class="${CONTEXTMENU_STYLE_ITEM_ICON}" src="${itemIcon}" draggable="false"/>
+            `;
+            tdText.innerHTML = `
+                <div class="${CONTEXTMENU_STYLE_ITEM_TEXT}">${itemName}</div>
+            `;
+            tdHotkey.innerHTML = `
+                <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}"
+                    style="display:${showHotkey ? 'block' : 'none'}">
+                    ${itemHotkey}
+                </div>
+            `;
+            tdArrow.innerHTML = `
+                <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
+                    style="display:${showArrow ? 'block' : 'none'}"></div>
+                <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
+                    style="display:${!showArrow ? 'block' : 'none'}; visibility: hidden"></div>
             `;
         }
-
         return itemView;
     }
 
-    private updateItemViewClass(item: ContextMenuItem, itemView: HTMLElement, selected: boolean): void {
+    private updateItemViewClass(item: ContextMenuItem, view: CHTMLElement, selected: boolean): void {
         if (ContextMenuItem.isDivider(item)) {
-            itemView.className = CONTEXTMENU_STYLE_DIVIDER;
+            view.element.className = CONTEXTMENU_STYLE_DIVIDER;
         } else if (!ContextMenuItem.isEnabled(item)) {
-            itemView.className = CONTEXTMENU_STYLE_ITEM_DISABLED;
+            view.element.className = CONTEXTMENU_STYLE_ITEM_DISABLED;
         } else if (selected) {
-            itemView.className = CONTEXTMENU_STYLE_ITEM_SELECTED;
+            view.element.className = CONTEXTMENU_STYLE_ITEM_SELECTED;
         } else {
-            itemView.className = CONTEXTMENU_STYLE_ITEM_NORMAL;
+            view.element.className = CONTEXTMENU_STYLE_ITEM_NORMAL;
         }
     }
 
     private computeItemRects(): void {
         let index = 0;
         Utils.visitElemementChildren(this.rootView, (i, element) => {
-            const elementRect = Utils.getBoundingClientRect(element);
+            const elementRect = element.getBoundingClientRect();
+            if (!elementRect) {
+                return;
+            }
             const item = this.items[i];
             if (!ContextMenuItem.isDivider(item)) {
                 const l = elementRect.l;
@@ -273,7 +286,7 @@ class ContextMenuViewHolder {
         });
     }
 
-    private visitItems(callback: (index: number, element: HTMLElement, item: ContextMenuItem) => void): void {
+    private visitItems(callback: (index: number, element: CHTMLElement, item: ContextMenuItem) => void): void {
         let index = 0;
         Utils.visitElemementChildren(this.rootView, (i, element) => {
             const item = this.items[i];

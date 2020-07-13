@@ -3,8 +3,9 @@
 import {ContextMenu} from '../model/ContextMenu';
 import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
-import Utils from '../utils/Utils';
-import HashMap from '../model/HashMap';
+import HashMap from '../model/compatible/CMap';
+import CEvent from '../model/compatible/CEvent';
+import CHTMLElement from '../model/compatible/CHTMLElement';
 
 /**
  * window 事件监听
@@ -37,14 +38,16 @@ class EventListener {
             splits.shift();
             const codes: Array<string> = splits.length === 0 ? [] : splits;
 
-            const listener = (e: Event): void => {
-                if (e instanceof MouseEvent) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const listener = (e: any): void => {
+                e = new CEvent(e);
+                if (e.isMouseEvent()) {
                     //  step1. 先判断鼠标是否还在菜单区域内
-                    const point = Utils.getMouseEventPoint(e);
+                    const point = e.getPoint();
                     const menuStacks = this.menu?.presenter?.menuStacks || new HashMap();
                     for (const view of menuStacks.values()) {
-                        const rect: Rect = Utils.getBoundingClientRect(view.rootView);
-                        if (point.x >= rect.l && point.x <= rect.r && point.y >= rect.t && point.y <= rect.b) {
+                        const rect = new CHTMLElement(view.rootView).getBoundingClientRect();
+                        if (rect && point.x >= rect.l && point.x <= rect.r && point.y >= rect.t && point.y <= rect.b) {
                             // 鼠标还在根菜单区域内
                             return;
                         }
@@ -64,7 +67,7 @@ class EventListener {
                     }
 
                     this.onevent(event);
-                } else if (e instanceof KeyboardEvent) {
+                } else if (e.isKeyboardEvent()) {
                     let code: number | undefined = undefined;
                     if (e.keyCode !== undefined) {
                         code = code === undefined ? e.keyCode : Math.max(code, e.keyCode);
@@ -173,9 +176,8 @@ class TargetRectListner {
                 return;
             }
             const event = this.menu?.presenter?.event;
-            const target = event?.target;
-            if (event && target instanceof HTMLElement) {
-                const rect = Utils.getBoundingClientRect(target);
+            const rect = event?.target?.getBoundingClientRect();
+            if (rect) {
                 if (this.targetRect !== undefined && !rect.equals(this.targetRect)) {
                     this.hide();
                 } else {

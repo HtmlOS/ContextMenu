@@ -1,10 +1,10 @@
 'use strict';
 
 import ContextMenuPresenter from '../presenter/ContextMenuPresenter';
-import Utils from '../utils/Utils';
 import ContextMenuItem from './ContextMenuItem';
 import Logger from '../utils/Logger';
 import ContextMenuMonitor from '../presenter/ContextMenuMonitor';
+import CEvent from './compatible/CEvent';
 
 class ContextMenuOptions {
     layer?: HTMLElement;
@@ -39,18 +39,18 @@ class ContextMenu {
     }
 
     show(menu: Array<ContextMenuItem>, options?: ContextMenuOptions): void {
-        const e = window.event;
-        if (!e || !(e instanceof MouseEvent) || !(e.target instanceof HTMLElement)) {
+        const event = new CEvent(window.event);
+        if (!event.isMouseEvent()) {
             return;
         } else {
-            Utils.preventEvent(e);
+            event.prevent();
         }
 
         this.hide();
 
-        Logger.debug('show menu', menu, Utils.getMouseEventPoint(e));
+        Logger.debug('show menu', menu, event.getPoint());
 
-        this.presenter = new ContextMenuPresenter(e, menu, options || this.options);
+        this.presenter = new ContextMenuPresenter(event, menu, options || this.options);
         this.presenter.onItemClick = (index: number, item: ContextMenuItem): void => {
             if (ContextMenuItem.isEnabled(item) && item.onclick) {
                 this.hide();

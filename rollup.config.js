@@ -1,5 +1,9 @@
 'use strict';
 
+// 是否开发环境
+const IS_DEV = process.env.NODE_ENV !== 'production';
+console.log(`process.env.NODE_ENV=>${process.env.NODE_ENV}`);
+
 import babel from 'rollup-plugin-babel';
 // 为了让rollup识别commonjs类型的包,默认只支持导入ES6
 import commonjs from 'rollup-plugin-commonjs';
@@ -29,9 +33,6 @@ import {terser} from 'rollup-plugin-terser';
 // ts转js的编译器
 import typescript from 'rollup-plugin-typescript2';
 
-let defaults = {compilerOptions: {declaration: true}};
-let override = {compilerOptions: {declaration: false}};
-
 // 当使用汇总绑定库时，我们通常希望避免包含对等依赖项，
 // 因为它们应该由库的使用者提供。通过排除这些依赖项，
 // 我们可以减小捆绑大小，避免捆绑重复的依赖项。
@@ -42,10 +43,6 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 //在打包完成时候现实出打包文件的体积大小，这个帮助我们分析包体积，并调整控制
 import filesize from 'rollup-plugin-filesize';
-
-// 是否开发环境
-const isDev = process.env.NODE_ENV !== 'production';
-console.log(`process.env.NODE_ENV=${process.env.NODE_ENV}`);
 
 // web 服务
 import serve from 'rollup-plugin-serve';
@@ -68,10 +65,23 @@ const banner = `/*!
 export default {
     input: `./src/${pkg.title}.ts`,
     plugins: [
-        isDev &&
+        IS_DEV &&
             serve({
                 open: true,
-                host: 'localhost',
+                // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+                host: (() => {
+                    const interfaces = require('os').networkInterfaces();
+                    for (const devName in interfaces) {
+                        const iface = interfaces[devName];
+                        for (let i = 0; i < iface.length; i++) {
+                            const alias = iface[i];
+                            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                                return alias.address;
+                            }
+                        }
+                    }
+                    return 'localhost';
+                })(),
                 port: 8080,
                 contentBase: ['serve', 'dist'],
                 historyApiFallback: false,
@@ -80,8 +90,8 @@ export default {
                     'Access-Control-Allow-Origin': '*',
                 },
             }),
-        isDev && livereload('serve'),
-        isDev && multiEntry(),
+        IS_DEV && livereload('serve'),
+        IS_DEV && multiEntry(),
         // 代码中的__VERSION__字符串会被package.json中的version字段所替代
         replace({
             __VERSION__: pkg.version,
@@ -89,9 +99,7 @@ export default {
         typescript({
             exclude: 'node_modules/**',
             typescript: require('typescript'),
-            tsconfigDefaults: defaults,
             tsconfig: 'tsconfig.json',
-            tsconfigOverride: override,
         }),
         json(),
         localResolve(),
@@ -124,7 +132,7 @@ export default {
                 comments: new RegExp(pkg.title),
             },
             compress: {
-                pure_funcs: isDev ? [] : ['console.log'], // 去掉console.log函数
+                pure_funcs: IS_DEV ? [] : ['console.log'], // 去掉console.log函数
             },
         }),
         {banner: banner},
