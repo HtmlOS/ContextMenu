@@ -26,7 +26,8 @@ class CEvent {
 
     constructor(e: any) {
         this.e = e;
-        this.target = new CHTMLElement(e?.target);
+
+        this.target = new CHTMLElement(e?.srcElement || e?.target);
 
         this.button = e.button;
 
