@@ -5,26 +5,22 @@ import ContextMenuItem from './ContextMenuItem';
 import Logger from '../utils/Logger';
 import ContextMenuMonitor from '../presenter/ContextMenuMonitor';
 import CEvent from './compatible/CEvent';
-
-class ContextMenuOptions {
-    layer?: HTMLElement;
-    i18n?: (key: string) => string;
-}
+import ContextMenuOptions from './ContextMenuOptions';
 
 /**
  * lib entry
  */
 class ContextMenu {
-    options?: ContextMenuOptions;
+    options: ContextMenuOptions;
     presenter?: ContextMenuPresenter;
     monitor?: ContextMenuMonitor;
 
-    config(globalOptions?: ContextMenuOptions): void {
-        this.options = globalOptions;
+    constructor() {
+        this.options = new ContextMenuOptions();
     }
 
-    debug(b: boolean): void {
-        Logger.debuggable = b;
+    config(globalOptions?: ContextMenuOptions): void {
+        this.options = new ContextMenuOptions(globalOptions);
     }
 
     hide(): void {
@@ -50,7 +46,11 @@ class ContextMenu {
 
         Logger.debug('show menu', menu, event.getPoint());
 
-        this.presenter = new ContextMenuPresenter(event, menu, options || this.options);
+        const customOptions = new ContextMenuOptions();
+        ContextMenuOptions.assgin(customOptions, this.options);
+        ContextMenuOptions.assgin(customOptions, options);
+
+        this.presenter = new ContextMenuPresenter(event, menu, customOptions);
         this.presenter.onItemClick = (index: number, item: ContextMenuItem): void => {
             if (ContextMenuItem.isEnabled(item) && item.onclick) {
                 this.hide();
@@ -67,4 +67,4 @@ class ContextMenu {
     }
 }
 
-export {ContextMenu, ContextMenuOptions};
+export default ContextMenu;

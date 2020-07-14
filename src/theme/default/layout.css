@@ -1,6 +1,6 @@
 /*
  *****************************************************************
- * root style
+ * layout
  *****************************************************************
  */
 
@@ -30,7 +30,7 @@
  *****************************************************************
  */
 
-.contextmenu .contextmenu_divider hr {
+.contextmenu .contextmenu-divider hr {
     height: 1px;
     padding: 0;
     margin: 1px;
@@ -42,23 +42,23 @@
  *****************************************************************
  */
 
-.contextmenu .contextmenu_item {
+.contextmenu .contextmenu-item {
     pointer-events: auto;
 }
 
-.contextmenu .contextmenu_item tr {
+.contextmenu .contextmenu-item tr {
     vertical-align: middle;
 }
 
-.contextmenu .contextmenu_item.contextmenu_item_selected {
+.contextmenu .contextmenu-item.contextmenu-item-selected {
     pointer-events: auto;
 }
 
-.contextmenu .contextmenu_item.contextmenu_item_disabled {
+.contextmenu .contextmenu-item.contextmenu-item-disabled {
     pointer-events: none;
 }
 
-.contextmenu .contextmenu_item .contextmenu_item_icon {
+.contextmenu .contextmenu-item .contextmenu-item-icon {
     display: block;
     width: 16px;
     height: 16px;
@@ -67,7 +67,7 @@
     margin-left: 12px;
 }
 
-.contextmenu .contextmenu_item .contextmenu_item_text {
+.contextmenu .contextmenu-item .contextmenu-item-name {
     word-break: keep-all;
     white-space: nowrap;
     padding: 4px;
@@ -77,12 +77,12 @@
     margin-bottom: 8px;
 }
 
-.contextmenu .contextmenu_item .contextmenu_item_hotkey {
+.contextmenu .contextmenu-item .contextmenu-item-hotkey {
     word-break: keep-all;
     white-space: nowrap;
 }
 
-.contextmenu .contextmenu_item .contextmenu_item_arrow {
+.contextmenu .contextmenu-item .contextmenu-item-arrow {
     width: 16px;
     height: 16px;
     min-width: 16px;

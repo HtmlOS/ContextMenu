@@ -2,36 +2,26 @@
 
 import './theme/default/index.css';
 
-import {ContextMenu, ContextMenuOptions} from './model/ContextMenu';
-import ContextMenuItem from './model/ContextMenuItem';
+import ContextMenu from './model/ContextMenu';
+import ContextMenuOptions from './model/ContextMenuOptions';
+import Logger from './utils/Logger';
 
-class ContextMenuManager {
-    private static readonly contextmenu: ContextMenu = new ContextMenu();
-
-    public static config(globalOptions?: ContextMenuOptions): void {
-        this.contextmenu.config(globalOptions);
-    }
-
-    public static debug(b: boolean): void {
-        this.contextmenu.debug(b);
-    }
-
-    public static hide(): void {
-        this.contextmenu.hide();
-    }
-
-    public static show(menu: Array<ContextMenuItem>, options?: ContextMenuOptions): void {
-        this.contextmenu.show(menu, options);
-    }
-}
-
+const globalContextMenu = new ContextMenu();
 if (window) {
     Object.defineProperty(window, 'ContextMenu', {
-        value: ContextMenuManager,
+        value: globalContextMenu,
         writable: false,
         configurable: false,
     });
 }
 
-export {ContextMenuManager as ContextMenu, ContextMenuOptions};
-export default ContextMenuManager as ContextMenu;
+Object.defineProperty(globalContextMenu, 'debug', {
+    value: (b: boolean): void => {
+        Logger.debuggable = b;
+    },
+    writable: false,
+    configurable: false,
+});
+
+export {globalContextMenu as ContextMenu, ContextMenuOptions};
+export default globalContextMenu as ContextMenu;

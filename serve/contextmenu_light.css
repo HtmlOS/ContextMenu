@@ -4,18 +4,18 @@
     border: 0 solid #999;
 }
 
-.light .contextmenu .contextmenu_divider hr {
+.light .contextmenu .contextmenu-divider hr {
     background: rgba(196, 196, 196, 0.5);
 }
 
-.light .contextmenu .contextmenu_item.contextmenu_item_selected {
+.light .contextmenu .contextmenu-item.contextmenu-item-selected {
     background: lightblue;
 }
 
-.light .contextmenu .contextmenu_item .contextmenu_item_text {
+.light .contextmenu .contextmenu-item .contextmenu-item-name {
     color: rgba(189, 72, 72, 0.9);
 }
 
-.light .contextmenu .contextmenu_item .contextmenu_item_hotkey {
+.light .contextmenu .contextmenu-item .contextmenu-item-hotkey {
     color: #aaa;
 }

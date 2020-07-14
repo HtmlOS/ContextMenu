@@ -1,6 +1,6 @@
 /*
  *****************************************************************
- * root style
+ * style
  *****************************************************************
  */
 
@@ -24,7 +24,7 @@
  *****************************************************************
  */
 
-.contextmenu .contextmenu_divider hr {
+.contextmenu .contextmenu-divider hr {
     border: none;
     background: rgba(196, 196, 196, 0.5);
 }
@@ -35,11 +35,11 @@
  *****************************************************************
  */
 
-.contextmenu .contextmenu_item.contextmenu_item_selected {
+.contextmenu .contextmenu-item.contextmenu-item-selected {
     background: whitesmoke;
 }
 
-.contextmenu .contextmenu_item.contextmenu_item_disabled {
+.contextmenu .contextmenu-item.contextmenu-item-disabled {
     -webkit-filter: grayscale(100%);
     -moz-filter: grayscale(100%);
     -ms-filter: grayscale(100%);
@@ -48,17 +48,17 @@
     opacity: 0.6;
 }
 
-.contextmenu .contextmenu_item .contextmenu_item_text {
+.contextmenu .contextmenu-item .contextmenu-item-name {
     font-size: 16px;
     color: rgba(0, 0, 0, 0.9);
 }
 
-.contextmenu .contextmenu_item .contextmenu_item_hotkey {
+.contextmenu .contextmenu-item .contextmenu-item-hotkey {
     font-size: 12px;
     color: #aaa;
 }
 
-.contextmenu .contextmenu_item .contextmenu_item_arrow {
+.contextmenu .contextmenu-item .contextmenu-item-arrow {
     filter: alpha(opacity=50);
     -moz-opacity: 0.5;
     opacity: 0.5;

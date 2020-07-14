@@ -2,13 +2,13 @@
 
 import Point from '../utils/Point';
 import ContextMenuItem from '../model/ContextMenuItem';
-import {ContextMenuViewHolder} from '../view/ContextMenuView';
-import {ContextMenuOptions} from '../model/ContextMenu';
+import ContextMenuViewHolder from '../view/ContextMenuView';
 import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
 import Utils from '../utils/Utils';
 import HashMap from '../model/compatible/CMap';
 import CEvent from '../model/compatible/CEvent';
+import ContextMenuOptions from '../model/ContextMenuOptions';
 
 class ContextMenuPresenter {
     readonly id: string = new Date().toUTCString();

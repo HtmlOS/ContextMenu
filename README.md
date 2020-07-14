@@ -14,7 +14,7 @@
 - [X] Support hotkey description
 - [X] Support automatic adaptation to browser pop-up position (keep all menus visible in browser visible area)
 - [X] Support auto hide (when clicking outside area of ​​menu/adjusting browser window size/scrolling page/pressing `ESC`)
-- [X] Support custom css style
+- [X] Support custom css style & animation
 
 ![](./capture/capture1.png)
 ![](./capture/capture2.png)
@@ -22,9 +22,9 @@
 ### Browser Compatibility
 
 
-| Browser  | Chrome | FireFox | IE | Safari |
-|  ------- | ------ | ------- | --- | ----- |
-|  Version  |    *   |    *    |  9+ |  11+  |
+| Browser | Chrome | FireFox | IE | Edge | Safari | Opera |
+| ------- | ------ | ------- | -- | ---- | ------ | ----  |
+| Version |   27   |    21   |  9 |  12  |   6    | 15    | 
 
 
 ### Usage

@@ -1,6 +1,6 @@
 'use strict';
 
-import {ContextMenu} from '../model/ContextMenu';
+import ContextMenu from '../model/ContextMenu';
 import Rect from '../utils/Rect';
 import Logger from '../utils/Logger';
 import HashMap from '../model/compatible/CMap';

@@ -68,16 +68,18 @@ var lang_zh = {
 menulist[0].children = menulist;
 
 function hasClass(ele, cls) {
-    return ele.className.match('(\\s|^)' + cls + '(\\s|$)');
+    return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
 }
 //为指定的dom元素添加样式
 function addClass(ele, cls) {
-    if (!hasClass(ele, cls)) ele.className += ' ' + cls;
+    if (!hasClass(ele, cls)) {
+        ele.className += ' ' + cls;
+    }
 }
 //删除指定dom元素的样式
 function removeClass(ele, cls) {
     if (hasClass(ele, cls)) {
-        ele.className = ele.className.replace('(\\s|^)' + cls + '(\\s|$)', ' ');
+        ele.className = ele.className.replace(new RegExp('(\\s|^)' + cls + '(\\s|$)'), ' ');
     }
 }
 
@@ -99,9 +101,10 @@ ContextMenu.config({
 body.oncontextmenu = function (e) {
     for (var i in radios) {
         var radio = radios[i];
-        removeClass(body, radio.value);
         if (radio.checked) {
             addClass(body, radio.value);
+        } else {
+            removeClass(body, radio.value);
         }
     }
     ContextMenu.show(menulist);

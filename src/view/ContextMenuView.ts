@@ -1,23 +1,13 @@
 'use strict';
 
-import {
-    CONTEXTMENU_STYLE,
-    CONTEXTMENU_STYLE_ITEM_NORMAL,
-    CONTEXTMENU_STYLE_ITEM_SELECTED,
-    CONTEXTMENU_STYLE_ITEM_DISABLED,
-    CONTEXTMENU_STYLE_DIVIDER,
-    CONTEXTMENU_STYLE_ITEM_ICON,
-    CONTEXTMENU_STYLE_ITEM_TEXT,
-    CONTEXTMENU_STYLE_ITEM_HOTKEY,
-    CONTEXTMENU_STYLE_ITEM_ARROW,
-} from './ContextMenuStyle';
-import {ContextMenuOptions} from '../model/ContextMenu';
 import ContextMenuItem from '../model/ContextMenuItem';
 import Rect from '../utils/Rect';
 import Utils from '../utils/Utils';
 import Logger from '../utils/Logger';
 import HashMap from '../model/compatible/CMap';
 import CHTMLElement from '../model/compatible/CHTMLElement';
+import ContextMenuStyle from '../model/ContextMenuStyle';
+import ContextMenuOptions from '../model/ContextMenuOptions';
 
 interface OnStateChangedListening {
     onSelected(index: number): void;
@@ -28,6 +18,7 @@ interface OnStateChangedListening {
 
 class ContextMenuViewHolder {
     readonly options: ContextMenuOptions;
+    readonly style: ContextMenuStyle;
     readonly id: string;
     readonly items: Array<ContextMenuItem>;
 
@@ -42,7 +33,10 @@ class ContextMenuViewHolder {
         this.id = id;
         this.items = items;
         this.options = options;
+        this.style = new ContextMenuStyle(options);
         this.rootView = this.generateMenuView();
+
+        this.select(-1);
     }
 
     get onStateChangedListener(): OnStateChangedListening {
@@ -62,13 +56,20 @@ class ContextMenuViewHolder {
 
     public hide(): void {
         const view = this.rootView;
-        const layer = this.options?.layer || document.body;
-        layer.removeChild(view);
+        const layer = this.options.layer || view.parentElement;
+        if (!layer) {
+            return;
+        }
+        view.className = [this.style.contextmenu, this.style.contextmenuOut[0]].join(' ');
+        setTimeout(() => {
+            layer.removeChild(view);
+        }, this.style.contextmenuOut[1] || 0);
     }
 
     public show(anchor: Rect): void {
         const view = this.rootView;
 
+        view.className = this.style.contextmenu;
         view.style.visibility = 'hidden';
 
         Logger.debug('menu view render start : anchor rect =', anchor);
@@ -77,7 +78,10 @@ class ContextMenuViewHolder {
             this.onStateChangedListener.onRenderStart();
         }
 
-        const layer = this.options?.layer || document.body;
+        const layer = this.options.layer || view.parentElement;
+        if (!layer) {
+            return;
+        }
         layer.appendChild(view);
 
         const reandering = (): void => {
@@ -129,6 +133,7 @@ class ContextMenuViewHolder {
                         return;
                     }
                     view.style.visibility = 'visible';
+                    view.className = [this.style.contextmenu, this.style.contextmenuIn[0]].join(' ');
                     this.computeItemRects();
                     if (this.onStateChangedListener !== undefined) {
                         this.onStateChangedListener.onRenderStop(timeRenderCost);
@@ -170,8 +175,6 @@ class ContextMenuViewHolder {
     private generateMenuView(): HTMLElement {
         const menuView: HTMLElement = document.createElement('table');
 
-        menuView.className = CONTEXTMENU_STYLE;
-
         menuView.id = this.id;
 
         menuView.setAttribute('border', '0');
@@ -189,7 +192,6 @@ class ContextMenuViewHolder {
         for (const i in this.items) {
             const item: ContextMenuItem = this.items[i];
             const itemView = this.generateItemView(item);
-            this.updateItemViewClass(item, new CHTMLElement(itemView), false);
             menuView.appendChild(itemView);
         }
 
@@ -204,8 +206,7 @@ class ContextMenuViewHolder {
 
         const itemIcon: string =
             item.icon || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-        const itemName: string =
-            this.options && this.options.i18n ? this.options.i18n(item.name || '') || item.name || '' : item.name || '';
+        const itemName: string = this.options.i18n(item.name || '') || item.name || '';
         const itemHotkey: string = item.hotkey || '';
 
         if (ContextMenuItem.isDivider(item)) {
@@ -216,30 +217,30 @@ class ContextMenuViewHolder {
             itemView.appendChild(th);
         } else {
             const tdIcon: HTMLElement = document.createElement('td');
-            const tdText: HTMLElement = document.createElement('td');
+            const tdName: HTMLElement = document.createElement('td');
             const tdHotkey: HTMLElement = document.createElement('td');
             const tdArrow: HTMLElement = document.createElement('td');
             itemView.appendChild(tdIcon);
-            itemView.appendChild(tdText);
+            itemView.appendChild(tdName);
             itemView.appendChild(tdHotkey);
             itemView.appendChild(tdArrow);
 
             tdIcon.innerHTML = `
-                <img class="${CONTEXTMENU_STYLE_ITEM_ICON}" src="${itemIcon}" draggable="false"/>
+                <img class="${this.style.contextmenuItemIcon}" src="${itemIcon}" draggable="false"/>
             `;
-            tdText.innerHTML = `
-                <div class="${CONTEXTMENU_STYLE_ITEM_TEXT}">${itemName}</div>
+            tdName.innerHTML = `
+                <div class="${this.style.contextmenuItemName}">${itemName}</div>
             `;
             tdHotkey.innerHTML = `
-                <div class="${CONTEXTMENU_STYLE_ITEM_HOTKEY}"
+                <div class="${this.style.contextmenuItemHotkey}"
                     style="display:${showHotkey ? 'block' : 'none'}">
                     ${itemHotkey}
                 </div>
             `;
             tdArrow.innerHTML = `
-                <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
+                <div class="${this.style.contextmenuItemArrow}"
                     style="display:${showArrow ? 'block' : 'none'}"></div>
-                <div class="${CONTEXTMENU_STYLE_ITEM_ARROW}"
+                <div class="${this.style.contextmenuItemArrow}"
                     style="display:${!showArrow ? 'block' : 'none'}; visibility: hidden"></div>
             `;
         }
@@ -248,13 +249,13 @@ class ContextMenuViewHolder {
 
     private updateItemViewClass(item: ContextMenuItem, view: CHTMLElement, selected: boolean): void {
         if (ContextMenuItem.isDivider(item)) {
-            view.element.className = CONTEXTMENU_STYLE_DIVIDER;
+            view.element.className = this.style.contextmenuDivider;
         } else if (!ContextMenuItem.isEnabled(item)) {
-            view.element.className = CONTEXTMENU_STYLE_ITEM_DISABLED;
+            view.element.className = [this.style.contextmenuItem, this.style.contextmenuItemDisabled].join(' ');
         } else if (selected) {
-            view.element.className = CONTEXTMENU_STYLE_ITEM_SELECTED;
+            view.element.className = [this.style.contextmenuItem, this.style.contextmenuItemSelected].join(' ');
         } else {
-            view.element.className = CONTEXTMENU_STYLE_ITEM_NORMAL;
+            view.element.className = this.style.contextmenuItem;
         }
     }
 
@@ -381,4 +382,4 @@ class ContextMenuViewHolder {
     }
 }
 
-export {ContextMenuViewHolder};
+export default ContextMenuViewHolder;
