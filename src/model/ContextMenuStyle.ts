@@ -26,23 +26,21 @@ class ContextMenuStyle {
         const contextmenuOut: {name: string; time: number} = {name: 'contextmenu-out', time: 0};
 
         if (style?.contextmenuIn) {
-            if (style.contextmenuIn.length > 0) {
-                const name = style.contextmenuIn[0];
-                contextmenuIn.name = name || contextmenuIn.name;
-            }
-            if (style.contextmenuIn.length > 1) {
-                const time = style.contextmenuIn[1];
-                contextmenuIn.time = isNaN(time) ? contextmenuIn.time : time;
+            for (let v of style.contextmenuIn) {
+                if (typeof v === 'number') {
+                    contextmenuIn.time = v;
+                } else if (typeof v === 'string') {
+                    contextmenuIn.name = v;
+                }
             }
         }
         if (style?.contextmenuOut) {
-            if (style.contextmenuOut.length > 0) {
-                const name = style.contextmenuOut[0];
-                contextmenuOut.name = name || contextmenuOut.name;
-            }
-            if (style.contextmenuOut.length > 1) {
-                const time = style.contextmenuOut[1];
-                contextmenuOut.time = isNaN(time) ? contextmenuOut.time : time;
+            for (let v of style.contextmenuOut) {
+                if (typeof v === 'number') {
+                    contextmenuOut.time = v;
+                } else if (typeof v === 'string') {
+                    contextmenuOut.name = v;
+                }
             }
         }
         this.contextmenuIn = [contextmenuIn.name, contextmenuIn.time];

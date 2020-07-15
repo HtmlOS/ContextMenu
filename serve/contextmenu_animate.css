@@ -1,0 +1,27 @@
+.contextmenu {
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.contextmenu-in {
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.fade-in {
+    -webkit-transition: all 0.5s linear;
+    -moz-transition: all 0.5s linear;
+    -o-transition: all 0.5s linear;
+    transition: all 0.5s linear;
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.fade-out {
+    -webkit-transition: all 0.5s linear;
+    -moz-transition: all 0.5s linear;
+    -o-transition: all 0.5s linear;
+    transition: all 0.5s linear;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}

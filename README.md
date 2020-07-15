@@ -16,8 +16,7 @@
 - [X] Support auto hide (when clicking outside area of ​​menu/adjusting browser window size/scrolling page/pressing `ESC`)
 - [X] Support custom css style & animation
 
-![](./capture/capture1.png)
-![](./capture/capture2.png)
+![](./capture/capture1.gif)
 
 ### Browser Compatibility
 
@@ -58,7 +57,13 @@ import "@htmlos/contextmenu/dist/contextmenu.css";
 ContextMenu.config({
   i18n: function(s){
     return your_translate_function(s) || s;
-  }
+  },
+  style: {
+      // custom animation: [string, number] => [className, duration],
+      // defaults to [ ".contextmenu-in", 0], [ ".contextmenu-out", 0]
+      contextmenuIn: ['fade-in', 200],   
+      contextmenuOut: ['fade-out', 200], 
+  },
 });
 ```
 

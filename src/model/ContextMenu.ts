@@ -11,7 +11,7 @@ import ContextMenuOptions from './ContextMenuOptions';
  * lib entry
  */
 class ContextMenu {
-    options: ContextMenuOptions;
+    options: ContextMenuOptions = new ContextMenuOptions();
     presenter?: ContextMenuPresenter;
     monitor?: ContextMenuMonitor;
 
@@ -20,7 +20,7 @@ class ContextMenu {
     }
 
     config(globalOptions?: ContextMenuOptions): void {
-        this.options = new ContextMenuOptions(globalOptions);
+        ContextMenuOptions.assgin(this.options, globalOptions);
     }
 
     hide(): void {

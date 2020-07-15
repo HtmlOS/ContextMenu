@@ -60,10 +60,14 @@ class ContextMenuViewHolder {
         if (!layer) {
             return;
         }
-        view.className = [this.style.contextmenu, this.style.contextmenuOut[0]].join(' ');
-        setTimeout(() => {
+        if (view.style.visibility === 'visible') {
+            view.className = [this.style.contextmenu, this.style.contextmenuOut[0]].join(' ');
+            setTimeout(() => {
+                layer.removeChild(view);
+            }, this.style.contextmenuOut[1] || 0);
+        } else {
             layer.removeChild(view);
-        }, this.style.contextmenuOut[1] || 0);
+        }
     }
 
     public show(anchor: Rect): void {
@@ -71,6 +75,10 @@ class ContextMenuViewHolder {
 
         view.className = this.style.contextmenu;
         view.style.visibility = 'hidden';
+
+        const initRect: Rect = this.fixedLocation(anchor);
+        view.style.top = initRect.t + 'px';
+        view.style.left = initRect.l + 'px';
 
         Logger.debug('menu view render start : anchor rect =', anchor);
         const timeRenderStart = new Date().getTime();
@@ -84,18 +92,8 @@ class ContextMenuViewHolder {
         }
         layer.appendChild(view);
 
-        const reandering = (): void => {
-            setTimeout(() => {
-                if (!layer.contains(view)) {
-                    Logger.debug('menu view destroyed');
-                    return;
-                }
-                if (!view.offsetWidth || !view.offsetHeight) {
-                    reandering();
-                    Logger.debug('menu view rendering');
-                    return;
-                }
-
+        Utils.runOnCondition(
+            () => {
                 const width: number = view.offsetWidth;
                 const height: number = view.offsetHeight;
 
@@ -122,31 +120,50 @@ class ContextMenuViewHolder {
                 view.style.top = menuRect.t + 'px';
                 view.style.left = menuRect.l + 'px';
 
-                const timeRenderStop = new Date().getTime();
-                const timeRenderCost = timeRenderStop - timeRenderStart;
-                Logger.debug('menu view render end : cost ' + timeRenderCost + 'ms');
-
-                // fixed compute
-                setTimeout(() => {
-                    if (!layer.contains(view)) {
-                        Logger.debug('menu view destroyed');
-                        return;
-                    }
-                    view.style.visibility = 'visible';
-                    view.className = [this.style.contextmenu, this.style.contextmenuIn[0]].join(' ');
-                    this.computeItemRects();
-                    if (this.onStateChangedListener !== undefined) {
-                        this.onStateChangedListener.onRenderStop(timeRenderCost);
-                    }
-                }, 10);
-            }, 10);
-        };
-        reandering();
+                Utils.runOnCondition(
+                    () => {
+                        view.style.visibility = 'visible';
+                        view.className = [this.style.contextmenu, this.style.contextmenuIn[0]].join(' ');
+                        this.computeItemRects();
+                        const timeRenderStop = new Date().getTime();
+                        const timeRenderCost = timeRenderStop - timeRenderStart;
+                        Logger.debug('menu view render end : cost ' + timeRenderCost + 'ms');
+                        if (this.onStateChangedListener !== undefined) {
+                            this.onStateChangedListener.onRenderStop(timeRenderCost);
+                        }
+                    },
+                    (): boolean => {
+                        const rect = new CHTMLElement(view).getBoundingClientRect();
+                        return (
+                            rect != undefined &&
+                            Math.abs(rect.l - this.rootViewRect.l) < 1 &&
+                            Math.abs(rect.t - this.rootViewRect.t) < 1
+                        );
+                    },
+                    (): boolean => {
+                        return !layer.contains(view);
+                    },
+                    10
+                );
+            },
+            (): boolean => {
+                return (
+                    view.offsetWidth !== undefined &&
+                    view.offsetWidth >= 0 &&
+                    view.offsetHeight !== undefined &&
+                    view.offsetHeight > 0
+                );
+            },
+            (): boolean => {
+                return !layer.contains(view);
+            },
+            10
+        );
     }
 
     private updateStateChangedListener(): void {
         this.visitItems((index, view, item) => {
-            if (this.onStateChangedListener !== undefined) {
+            if (this.onStateChangedListener !== undefined && !ContextMenuItem.isDivider(item)) {
                 view.element.onmouseover = ((index: number, hook: (index: number) => void) => {
                     return (): void => {
                         hook(index);
@@ -292,9 +309,10 @@ class ContextMenuViewHolder {
         Utils.visitElemementChildren(this.rootView, (i, element) => {
             const item = this.items[i];
             if (ContextMenuItem.isDivider(item)) {
-                return;
+                callback(-1, element, item);
+            } else {
+                callback(index++, element, item);
             }
-            callback(index++, element, item);
         });
     }
 

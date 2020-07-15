@@ -86,6 +86,31 @@ class Utils {
             child = child.nextSibling;
         }
     }
+
+    public static runOnCondition(
+        run: () => void,
+        condition: () => boolean,
+        interruptted: () => boolean,
+        interval: number
+    ): void {
+        if (interruptted()) {
+            return;
+        }
+        setTimeout(() => {
+            if (interruptted()) {
+                return;
+            }
+            if (condition()) {
+                try {
+                    run();
+                } catch (err) {
+                    return;
+                }
+                return;
+            }
+            Utils.runOnCondition(run, condition, interruptted, interval);
+        }, interval);
+    }
 }
 
 export default Utils;

@@ -86,15 +86,22 @@ function removeClass(ele, cls) {
 var body = document.getElementsByTagName('body')[0];
 var terminal = document.getElementById('terminal');
 var radios = [
-    document.getElementById('radio_default'),
-    document.getElementById('radio_light'),
-    document.getElementById('radio_dark'),
+    document.getElementById('radio_theme_default'),
+    document.getElementById('radio_theme_light'),
+    document.getElementById('radio_theme_dark'),
 ];
-var radio_zh = document.getElementById('radio_zh');
+var radio_lang_zh = document.getElementById('radio_lang_zh');
+
+var radio_animate_none = document.getElementById('radio_animate_none');
+var radio_animate_fade = document.getElementById('radio_animate_fade');
 
 ContextMenu.config({
     i18n: function (s) {
-        return radio_zh.checked ? lang_zh[s] : s;
+        return radio_lang_zh.checked ? lang_zh[s] : s;
+    },
+    style: {
+        contextmenuIn: ['fade-in', 200],
+        contextmenuOut: ['fade-out', 200],
     },
 });
 
@@ -107,5 +114,21 @@ body.oncontextmenu = function (e) {
             removeClass(body, radio.value);
         }
     }
+    var contextmenuIn = [];
+    var contextmenuOut = [];
+    if (radio_animate_none.checked) {
+        contextmenuIn = ['contextmenu-in', 0];
+        contextmenuOut = ['', 0];
+    }
+    if (radio_animate_fade.checked) {
+        contextmenuIn = ['fade-in', 500];
+        contextmenuOut = ['fade-out', 500];
+    }
+    ContextMenu.config({
+        style: {
+            contextmenuIn: contextmenuIn,
+            contextmenuOut: contextmenuOut,
+        },
+    });
     ContextMenu.show(menulist);
 };

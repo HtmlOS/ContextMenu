@@ -1,8 +1,10 @@
 @import './contextmenu_light.css';
 @import './contextmenu_dark.css';
+@import './contextmenu_animate.css';
 
 html,
 body {
+    display: inline-block;
     width: 100%;
     height: 100%;
     margin: 0;
