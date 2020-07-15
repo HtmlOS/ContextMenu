@@ -64,12 +64,16 @@
     height: 16px;
     min-width: 16px;
     min-height: 16px;
+    max-width: 16px;
+    max-height: 16px;
     margin-left: 12px;
 }
 
 .contextmenu .contextmenu-item .contextmenu-item-name {
+    text-align: left;
     word-break: keep-all;
     white-space: nowrap;
+    min-width: 120px;
     padding: 4px;
     margin-left: 4px;
     margin-right: 4px;
