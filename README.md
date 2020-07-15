@@ -11,7 +11,7 @@
 - [X] Support menu item click event callback
 - [X] Support menu item disabled
 - [X] Support menu item icon
-- [X] Support hotkey description
+- [X] Support menu item hotkey description
 - [X] Support automatic adaptation to browser pop-up position (keep all menus visible in browser visible area)
 - [X] Support auto hide (when clicking outside area of ​​menu/adjusting browser window size/scrolling page/pressing `ESC`)
 - [X] Support custom css style & animation
