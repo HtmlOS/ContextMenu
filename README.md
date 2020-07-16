@@ -46,7 +46,7 @@ import "@htmlos/contextmenu/dist/contextmenu.css";
 - Custom style: please refer to `contextmenu.css`
   - Restrictions
     - Internally use `position: fixed`, which will cause some styles of some elements to be invalid (such as `.contextmenu` and `.contextmenu_item` of `margin`, need to use `padding` adjustment)
-    - Don't use `transition` animation attribute for `.contextmenu`, this may not only be invisible during the loading process, but also affect the subsequent automatic positioning,
+    - Don't use `transition` animation attribute for `.contextmenu`, this may not only be invisible during the loading process, but also affect the subsequent automatic positioning
     - Do not use animations that affect the size. If used, it may cause typographical disturbances, because the menu is already fixed size after being visible
     - Other attributes please test by yourself
 
