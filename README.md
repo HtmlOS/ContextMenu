@@ -99,4 +99,4 @@ Contextmenu.hide();
 
 ### License
 
-[LGPL-3.0](./license.txt)
+[MIT](./license.txt)
