@@ -32,9 +32,9 @@
 
 ```shell
 # npm
-npm i contextmenu.ts
+npm i @htmlos/contextmenu
 # yarn
-yarn add contextmenu.ts
+yarn add @htmlos/contextmenu
 ```
 
 - Import
