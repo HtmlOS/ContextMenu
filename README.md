@@ -20,11 +20,9 @@
 
 ### Browser Compatibility
 
-
 | Browser | Chrome | FireFox | IE | Edge | Safari | Opera |
 | ------- | ------ | ------- | -- | ---- | ------ | ----  |
 | Version |   27   |    21   |  9 |  12  |   6    | 15    | 
-
 
 ### Usage
 
@@ -38,6 +36,7 @@ yarn add @htmlos/contextmenu
 ```
 
 - Import
+
 ```js
 import {ContextMenu, ContextMenuOptions} from "@htmlos/contextmenu";
 import "@htmlos/contextmenu/dist/contextmenu.css";
@@ -50,7 +49,7 @@ import "@htmlos/contextmenu/dist/contextmenu.css";
     - Do not use animations that affect the size. If used, it may cause typographical disturbances, because the menu is already fixed size after being visible
     - Other attributes please test by yourself
 
-- Config: 
+- Config:
 
 ```js
 // ContextMenu.config(options: CotextMenuOptions);
@@ -61,8 +60,8 @@ ContextMenu.config({
   style: {
       // custom animation: [string, number] => [className, duration],
       // defaults to [ "contextmenu-in", 0], [ "contextmenu-out", 0]
-      contextmenuIn: ['fade-in', 200],   
-      contextmenuOut: ['fade-out', 200], 
+      contextmenuIn: ['fade-in', 200],
+      contextmenuOut: ['fade-out', 200],
   },
 });
 ```
