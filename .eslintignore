@@ -1,3 +1,4 @@
 dist/
 serve/
 .*rc.js
+deploy.js
