@@ -1,8 +1,11 @@
 # Html5 ContextMenu
 
+[![npm](https://badgen.net/npm/v/@htmlos/contextmenu)](https://npm.im/@htmlos/contextmenu)
+
+
 > A simple and easy-to-use contextmenu library for html5
 
-[![npm](https://badgen.net/npm/v/@htmlos/contextmenu)](https://npm.im/@htmlos/contextmenu)
+> DEMO [https://htmlos.github.io/ContextMenu/](https://htmlos.github.io/ContextMenu/)
 
 ### Features
 
