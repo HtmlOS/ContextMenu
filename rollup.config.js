@@ -83,14 +83,14 @@ export default {
                     return 'localhost';
                 })(),
                 port: 8080,
-                contentBase: ['serve', 'dist'],
+                // contentBase: ["serve", "dist"], // livereload('') 監聽根目錄， 不在需要單獨配置
                 historyApiFallback: false,
                 //set headers
                 headers: {
                     'Access-Control-Allow-Origin': '*',
                 },
             }),
-        IS_DEV && livereload('serve'),
+        IS_DEV && livereload('' /*使用‘‘根目錄代替 'serve'目錄，以便github pages可以讀取dist下的文件 */), 
         IS_DEV && multiEntry(),
         // 代码中的__VERSION__字符串会被package.json中的version字段所替代
         replace({
