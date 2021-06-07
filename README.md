@@ -54,7 +54,7 @@ import "@htmlos/contextmenu/dist/contextmenu.css";
 - Config:
 
 ```js
-// ContextMenu.config(options: CotextMenuOptions);
+// ContextMenu.config(options: ContextMenuOptions);
 ContextMenu.config({
   i18n: function(s){
     return your_translate_function(s) || s;
@@ -76,7 +76,7 @@ const menu=[
     name: "reload",
     icon: "./reload.png",
     disabled: false,
-    onlick: ()=>{},
+    onclick: ()=>{},
     hotkey: "ctrl+r",
     children: [
       //...
