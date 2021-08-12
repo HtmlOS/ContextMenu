@@ -7,7 +7,7 @@
   "module": "dist/contextmenu.esm.js",
   "browser": "dist/contextmenu.js",
   "style": "dist/contextmenu.css",
-  "version": "0.1.24",
+  "version": "0.1.25",
   "scripts": {
     "prettier": "prettier --write **/*.{js,ts,css}",
     "lint-code": "eslint --fix **/*.{js,ts}",
@@ -15,7 +15,7 @@
     "ncu": "npm install -g npm-check-updates && ncu -u",
     "serve": "rollup -c -w",
     "build": "tsc && cross-env NODE_ENV=production rollup -c",
-    "deploy": "npm run build && npm publish --access=public",
+    "deploy": "yarn build && npm publish --access=public",
     "undeploy": "npm unpublish @htmlos/contextmenu --force"
   },
   "keywords": [

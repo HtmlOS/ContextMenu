@@ -1,5 +1,5 @@
 /*!
- * @htmlos/contextmenu.js v0.1.24
+ * @htmlos/contextmenu.js v0.1.25
  * (c) 2018-2021 Mr.Fan
  * https://github.com/HtmlOS/contextmenu
  * Released under the MIT License.
