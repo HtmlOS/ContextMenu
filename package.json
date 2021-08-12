@@ -7,7 +7,7 @@
   "module": "dist/contextmenu.esm.js",
   "browser": "dist/contextmenu.js",
   "style": "dist/contextmenu.css",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "scripts": {
     "prettier": "prettier --write **/*.{js,ts,css}",
     "lint-code": "eslint --fix **/*.{js,ts}",
@@ -103,8 +103,6 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "global": "^4.4.0",
-    "npm-check-updates": "^11.8.3"
   },
   "engines": {
     "node": ">=8.0.0"
