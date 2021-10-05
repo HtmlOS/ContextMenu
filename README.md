@@ -6,7 +6,7 @@
 
 > A simple and easy-to-use contextmenu library for html5
 
-> DEMO [https://htmlos.github.io/ContextMenu/](https://htmlos.github.io/ContextMenu/)
+> Preview Demo [https://htmlos.github.io/ContextMenu/](https://htmlos.github.io/ContextMenu/)
 
 ### Features
 
