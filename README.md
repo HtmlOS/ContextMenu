@@ -2,6 +2,7 @@
 
 [![npm](https://badgen.net/npm/v/@htmlos/contextmenu)](https://npm.im/@htmlos/contextmenu)
 
+![](https://changkun.de/urlstat?mode=github&repo=HtmlOS/ContextMenu)
 
 > A simple and easy-to-use contextmenu library for html5
 
