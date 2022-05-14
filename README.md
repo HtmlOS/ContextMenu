@@ -101,7 +101,12 @@ Contextmenu.hide();
 
 ### Build
 
-```
+```bash
+sudo npm config set registry https://registry.npm.taobao.org
+# sudo npm i -g npm-check-updates
+ncu -u
+sudo npm config set registry https://registry.npmjs.org
+
 yarn config set disturl https://npm.taobao.org/dist -g
 yarn config set electron_mirror https://npm.taobao.org/mirrors/electron/ -g
 yarn config set sass_binary_site https://npm.taobao.org/mirrors/node-sass/ -g
