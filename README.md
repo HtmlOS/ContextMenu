@@ -119,6 +119,13 @@ yarn install
 yarn build
 ```
 
+### Publish
+
+```bash
+npm login
+npm run deploy
+```
+
 ### License
 
 [MIT](./license.txt)
